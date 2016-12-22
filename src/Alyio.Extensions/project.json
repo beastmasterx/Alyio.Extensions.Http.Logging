@@ -1,6 +1,6 @@
 ﻿{
   "title": "Alyio.Extensions",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "authors": [ "ROY" ],
   "packOptions": {
     "projectUrl": "https://github.com/qqbuby/Alyio.Extensions",
@@ -8,7 +8,7 @@
       "type": "git",
       "url": "https://github.com/qqbuby/Alyio.Extensions"
     },
-    "licenseUrl": "https://raw.githubusercontent.com/qqbuby/Alyio.Extensions/master/LICENSE",
+    "licenseUrl": "https://raw.githubusercontent.com/qqbuby/Alyio.Extensions/dev/LICENSE",
     "tags": [ "Extensions", "Methods" ]
   },
   "copyright": "Copyright (c) 2016 ROY",
