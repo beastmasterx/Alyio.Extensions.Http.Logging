@@ -1,6 +1,6 @@
 ﻿{
   "title": "Alyio.Extensions",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "authors": [ "ROY" ],
   "packOptions": {
     "projectUrl": "https://github.com/qqbuby/Alyio.Extensions",
@@ -23,7 +23,7 @@
         "System.Runtime.Extensions": "4.0.0"
       }
     },
-    "netstandard1.6": {
+    "netstandard1.3": {
       "imports": [ "dotnet5.6", "portable-net45+win8" ],
       "dependencies": {
         "System.Globalization": "4.3.0",
