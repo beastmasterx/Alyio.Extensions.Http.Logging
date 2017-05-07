@@ -1,6 +1,6 @@
 ﻿{
   "title": "Alyio.Extensions",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "authors": [ "ROY" ],
   "packOptions": {
     "projectUrl": "https://github.com/qqbuby/Alyio.Extensions",
@@ -13,6 +13,7 @@
   },
   "copyright": "Copyright (c) 2016 ROY",
   "buildOptions": {
+    "xmlDoc": true,
     "warningsAsErrors": true
   },
 

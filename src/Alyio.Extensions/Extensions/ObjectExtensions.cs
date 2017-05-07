@@ -3,25 +3,23 @@ using System.Globalization;
 
 namespace Alyio.Extensions
 {
+    /// <summary>
+    /// Extension methods for converting a <see cref="object"/> type to another base data type.
+    /// </summary>
     public static class ObjectExtensions
     {
         /// <summary>
-        /// Returns a string that represents the current object.
+        /// Converts the value of the specified object to its equivalent string representation.
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns>A string that represents the current object or <see cref="string.Empty"/> if <paramref name="value"/> is null.</returns>
-        public static string ToStringExt(this object value)
-        {
-            if (value == null)
-            {
-                return string.Empty;
-            }
-            else
-            {
-                return value.ToString();
-            }
-        }
+        /// <param name="value">An object that supplies the value to convert, or null.</param>
+        /// <returns>The string representation of value, or System.String.Empty if value is null.</returns>
+        public static string ToStringExt(this object value) => value?.ToString() ?? string.Empty;
 
+        /// <summary>
+        /// Converts the value of the specified object to a 32-bit signed integer.
+        /// </summary>
+        /// <param name="value">An object that supplies the value to convert, or null.</param>
+        /// <returns>A 32-bit signed integer equivalent to value, or null if value is null or was not converted successfully.</returns>
         public static int? ToInt32(this object value)
         {
             if (value == null) { return null; }
@@ -46,6 +44,11 @@ namespace Alyio.Extensions
             }
         }
 
+        /// <summary>
+        /// Converts the value of the specified object to a 64-bit signed integer.
+        /// </summary>
+        /// <param name="value">An object that supplies the value to convert, or null.</param>
+        /// <returns>A 64-bit signed integer equivalent to value, or null if value is null or was not converted successfully.</returns>
         public static long? ToInt64(this object value)
         {
             if (value == null) { return null; }
@@ -70,6 +73,11 @@ namespace Alyio.Extensions
             }
         }
 
+        /// <summary>
+        /// Converts the value of the specified object to a double-precision floating-point number.
+        /// </summary>
+        /// <param name="value">An object that supplies the value to convert, or null.</param>
+        /// <returns>A double-precision floating-point number equivalent to value, or null if value is null or was not converted successfully.</returns>
         public static double? ToDouble(this object value)
         {
             if (value == null) { return null; }
@@ -94,6 +102,11 @@ namespace Alyio.Extensions
             }
         }
 
+        /// <summary>
+        /// Converts the value of the specified object to a decimal number.
+        /// </summary>
+        /// <param name="value">An object that supplies the value to convert, or null.</param>
+        /// <returns>A decimal number equivalent to value, or null if value is null or was not converted successfully.</returns>
         public static decimal? ToDecimal(this object value)
         {
             if (value == null) { return null; }
@@ -118,6 +131,11 @@ namespace Alyio.Extensions
             }
         }
 
+        /// <summary>
+        /// Converts the value of the specified object to a date and time.
+        /// </summary>
+        /// <param name="value">An object that supplies the value to convert, or null.</param>
+        /// <returns>The date and time equivalent of the value of value, or null if value is null or was not converted successfully.</returns>
         public static DateTime? ToDateTime(this object value)
         {
             if (value == null) { return null; }
@@ -142,6 +160,11 @@ namespace Alyio.Extensions
             }
         }
 
+        /// <summary>
+        /// Converts the value of the specified object to a date without time.
+        /// </summary>
+        /// <param name="value">An object that supplies the value to convert, or null.</param>
+        /// <returns>The date without time equivalent of the value of value, or null if value is null or was not converted successfully.</returns>
         public static DateTime? ToDate(this object value)
         {
             return value.ToDateTime()?.Date;
