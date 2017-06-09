@@ -25,7 +25,6 @@
       }
     },
     "netstandard1.3": {
-      "imports": [ "dotnet5.6", "portable-net45+win8" ],
       "dependencies": {
         "System.Globalization": "4.3.0",
         "System.Runtime.Extensions": "4.3.0"
