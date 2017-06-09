@@ -31,15 +31,49 @@ namespace Alyio.Extensions
         }
 
         /// <summary>
-        /// Converts the <see cref="DateTime"/> object to its equivalent unix time stamp.
+        /// Converts the <see cref="DateTime"/> object to its equivalent Unix time represents the number of seconds that have passed since the beginning of 00:00:00 UTC Thursday 1, January 1970.
         /// </summary>
         /// <param name="datetime">The date and time value to convert.</param>
         /// <returns>A 64-bit signed integer representation of unix time stamp.</returns>
-        public static long ToUnixTimestamp(this DateTime datetime)
+        public static long ToUnix(this DateTime datetime)
         {
             var timeSpan = datetime.ToUniversalTime().Subtract(UnixEpochTime);
             var timestamp = (long)timeSpan.TotalSeconds;
             return timestamp;
+        }
+
+        /// <summary>
+        /// Converts the <see cref="DateTime"/> object to its equivalent Unix time represents the number of seconds that have passed since the beginning of 00:00:00 UTC Thursday 1, January 1970.
+        /// </summary>
+        /// <param name="seconds">The Unix time represents the number of seconds that have passed since the beginning of 00:00:00 UTC Thursday 1, January 1970.</param>
+        /// <returns>A local Time corresponding to the given Unix time.</returns>
+        public static DateTime? ToDateTime(this long seconds)
+        {
+            try
+            {
+                return UnixEpochTime.AddSeconds(seconds);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Converts the <see cref="DateTime"/> object to its equivalent Unix time represents the number of seconds that have passed since the beginning of 00:00:00 UTC Thursday 1, January 1970.
+        /// </summary>
+        /// <param name="seconds">The Unix time represents the number of seconds that have passed since the beginning of 00:00:00 UTC Thursday 1, January 1970.</param>
+        /// <returns>A local Time corresponding to the given Unix time.</returns>
+        public static DateTime? ToDateTime(this double seconds)
+        {
+            try
+            {
+                return UnixEpochTime.AddSeconds(seconds);
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }
