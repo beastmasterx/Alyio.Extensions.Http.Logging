@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Copyright>Copyright (c) 2016 ROY</Copyright>
+    <AssemblyTitle>Alyio.Extensions</AssemblyTitle>
+    <VersionPrefix>1.1.1</VersionPrefix>
+    <Authors>ROY</Authors>
+    <TargetFrameworks>netstandard1.3</TargetFrameworks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AssemblyName>Alyio.Extensions</AssemblyName>
+    <PackageId>Alyio.Extensions</PackageId>
+    <PackageTags>Extensions;Methods</PackageTags>
+    <PackageProjectUrl>https://github.com/qqbuby/Alyio.Extensions</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/qqbuby/Alyio.Extensions/dev/LICENSE</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/qqbuby/Alyio.Extensions</RepositoryUrl>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+
+</Project>
