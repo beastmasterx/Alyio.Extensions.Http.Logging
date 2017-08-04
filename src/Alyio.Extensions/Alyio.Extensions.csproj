@@ -3,9 +3,9 @@
   <PropertyGroup>
     <Copyright>Copyright (c) 2016 ROY</Copyright>
     <AssemblyTitle>Alyio.Extensions</AssemblyTitle>
-    <VersionPrefix>1.1.1</VersionPrefix>
+    <VersionPrefix>1.1.2</VersionPrefix>
     <Authors>ROY</Authors>
-    <TargetFrameworks>netstandard1.3</TargetFrameworks>
+    <TargetFrameworks>net451;netstandard1.3</TargetFrameworks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>Alyio.Extensions</AssemblyName>
