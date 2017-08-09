@@ -6,6 +6,7 @@ namespace Alyio.Extensions.Tests
     public class ByteExtensionsTests
     {
         private const string HEX = "19E9B9F3350B49189A2CC27D667541C5";
+        private const string LOWER_HEX = "19e9b9f3350b49189a2cc27d667541c5";
 
         [Fact]
         public void Test()
@@ -19,6 +20,8 @@ namespace Alyio.Extensions.Tests
             var hex = bytes.ToHex();
 
             Assert.Equal(HEX, hex);
+
+            Assert.Equal(hex.ToLowerInvariant(), LOWER_HEX);
         }
     }
 }
