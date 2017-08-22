@@ -3,15 +3,15 @@
   <PropertyGroup>
     <Copyright>Copyright (c) 2016 ROY</Copyright>
     <AssemblyTitle>Alyio.Extensions</AssemblyTitle>
-    <VersionPrefix>1.1.2</VersionPrefix>
+    <VersionPrefix>2.0.0</VersionPrefix>
     <Authors>ROY</Authors>
-    <TargetFrameworks>net451;netstandard1.3</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>Alyio.Extensions</AssemblyName>
     <Description>Provides extension methods for converting a base data type to another base data type</Description>
     <PackageId>Alyio.Extensions</PackageId>
-    <PackageTags>Extensions;Methods</PackageTags>
+    <PackageTags>Extensions;Methods;Conveter</PackageTags>
     <PackageProjectUrl>https://github.com/qqbuby/Alyio.Extensions</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/qqbuby/Alyio.Extensions/dev/LICENSE</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
