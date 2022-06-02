@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A8DC70BC-1D8A-4343-8141-2928D89A113E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alyio.Extensions.Http.Logging", "src\Alyio.Extensions.Http.Logging\Alyio.Extensions.Http.Logging.csproj", "{75D218D9-F957-485C-805A-C4F69F037FE2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{82E98D17-B42A-41D5-8F75-88A181DC713E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alyio.Extensions.Http.Logging.Tests", "test\Alyio.Extensions.Http.Logging.Tests\Alyio.Extensions.Http.Logging.Tests.csproj", "{80FB4EDE-C88F-434E-9055-2401D91F4BE5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alyio.Extensions.Http.Logging.Samples", "test\Alyio.Extensions.Http.Logging.Samples\Alyio.Extensions.Http.Logging.Samples.csproj", "{933D4DFA-665E-4C5A-8B94-7080D5080A57}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{75D218D9-F957-485C-805A-C4F69F037FE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75D218D9-F957-485C-805A-C4F69F037FE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75D218D9-F957-485C-805A-C4F69F037FE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75D218D9-F957-485C-805A-C4F69F037FE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80FB4EDE-C88F-434E-9055-2401D91F4BE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80FB4EDE-C88F-434E-9055-2401D91F4BE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80FB4EDE-C88F-434E-9055-2401D91F4BE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80FB4EDE-C88F-434E-9055-2401D91F4BE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{933D4DFA-665E-4C5A-8B94-7080D5080A57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{933D4DFA-665E-4C5A-8B94-7080D5080A57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{933D4DFA-665E-4C5A-8B94-7080D5080A57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{933D4DFA-665E-4C5A-8B94-7080D5080A57}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{75D218D9-F957-485C-805A-C4F69F037FE2} = {A8DC70BC-1D8A-4343-8141-2928D89A113E}
+		{80FB4EDE-C88F-434E-9055-2401D91F4BE5} = {82E98D17-B42A-41D5-8F75-88A181DC713E}
+		{933D4DFA-665E-4C5A-8B94-7080D5080A57} = {82E98D17-B42A-41D5-8F75-88A181DC713E}
+	EndGlobalSection
+EndGlobal
