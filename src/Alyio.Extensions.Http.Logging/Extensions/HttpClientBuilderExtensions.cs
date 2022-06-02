@@ -20,7 +20,7 @@ public static class HttpClientBuilderExtensions
     /// <param name="ignoreRequestHeaders">A <see cref="string"/> array to ignore the specified headers of <see cref="System.Net.Http.HttpRequestMessage.Headers"/>.</param>
     /// <param name="ignoreResponseHeaders">A <see cref="string"/> array to ignore the specified headers of <see cref="System.Net.Http.HttpRequestMessage.Headers"/>.</param>
     /// <returns>An <see cref="IHttpClientBuilder" /> that can be used to configure the client.</returns>
-    public static IHttpClientBuilder AddLoggingHandler(
+    public static IHttpClientBuilder AddLoggerHandler(
         this IHttpClientBuilder builder,
          string? categoryName = null,
          LogLevel logLevel = LogLevel.Information,

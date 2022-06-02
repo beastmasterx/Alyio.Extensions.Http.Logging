@@ -4,7 +4,7 @@
 
 **Alyio..Extensions.Http.Logging** extends the `HttpClientHandler` for logging the HTTP request message and the HTTP response message.
 
-To use the `HttpClientHandler`, please use `IHttpClientBuilder.AddLoggingHandler` to add `LoggingHandler` as an handler into a specified `HttpClient`.
+To use the `HttpClientHandler`, please use `IHttpClientBuilder.AddLoggerHandler` to add `LoggerHandler` as an handler into a specified `HttpClient`.
 
 For example, the follow is a sample logging section.
 
@@ -19,7 +19,7 @@ var host = Host.CreateDefaultBuilder()
     {
         services.AddHttpClient<IOpenWeatherMapService, OpenWeatherMapService>(
             configureClient => configureClient.BaseAddress = new Uri("http://samples.openweathermap.org"))
-            .AddLoggingHandler(ignoreRequestContent: false, ignoreResponseContent: false);
+            .AddLoggerHandler(ignoreRequestContent: false, ignoreResponseContent: false);
 
         services.AddHostedService<OpenWeatherMapHostedService>();
     })

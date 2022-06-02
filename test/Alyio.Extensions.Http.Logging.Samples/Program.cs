@@ -8,7 +8,7 @@ var host = Host.CreateDefaultBuilder()
     {
         services.AddHttpClient<IOpenWeatherMapService, OpenWeatherMapService>(
             configureClient => configureClient.BaseAddress = new Uri("http://samples.openweathermap.org"))
-            .AddLoggingHandler(ignoreRequestContent: false, ignoreResponseContent: false);
+            .AddLoggerHandler(ignoreRequestContent: false, ignoreResponseContent: false);
 
         services.AddHostedService<OpenWeatherMapHostedService>();
     })
