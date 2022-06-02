@@ -1,4 +1,4 @@
-name: Alyio.Extensions
+name: Alyio.Extensions.Http.Logging
 on:
   push:
     branches:
