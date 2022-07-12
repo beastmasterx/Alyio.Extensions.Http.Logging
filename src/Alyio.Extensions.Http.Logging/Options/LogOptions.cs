@@ -21,7 +21,7 @@ public sealed class LogOptions
     /// <summary>
     /// Gets or sets a <see cref="string"/> array to ignore the specified headers of <see cref="HttpRequestMessage.Headers"/>.
     /// </summary>
-    public string[] IgnoreRequestHeaders { get; set; } = new string[] { };
+    public string[] IgnoreRequestHeaders { get; set; } = Array.Empty<string>();
 
     /// <summary>
     /// Gets or sets a <see cref="bool"/> value that indicates to ignore the response content. The default is true.
@@ -31,5 +31,5 @@ public sealed class LogOptions
     /// <summary>
     /// Gets or sets a <see cref="string"/> array to ignore the specified headers of <see cref="HttpResponseMessage.Headers"/>.
     /// </summary>
-    public string[] IgnoreResponseHeaders { get; set; } = new string[] { };
+    public string[] IgnoreResponseHeaders { get; set; } = Array.Empty<string>();
 }
