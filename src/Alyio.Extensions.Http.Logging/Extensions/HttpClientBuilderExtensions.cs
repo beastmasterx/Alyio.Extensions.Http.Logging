@@ -1,8 +1,7 @@
 using Alyio.Extensions.Http.Logging;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Alyio.Extensions;
+namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
 /// Extension mehtods for <see cref="IHttpClientBuilder"/>.

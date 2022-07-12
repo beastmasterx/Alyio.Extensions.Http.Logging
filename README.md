@@ -9,7 +9,6 @@ To use the `HttpClientHandler`, please use `IHttpClientBuilder.AddLoggerHandler`
 For example, the follow is a sample logging section.
 
 ```cs
-using Alyio.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
