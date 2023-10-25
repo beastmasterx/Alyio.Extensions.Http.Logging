@@ -1,4 +1,5 @@
 using Alyio.Extensions.Http.Logging;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -28,26 +29,42 @@ public static class HttpClientBuilderExtensions
          string[]? ignoreRequestHeaders = null,
          string[]? ignoreResponseHeaders = null)
     {
-        builder.Services.AddTransient<LoggerHandler>();
-        var services = builder.Services.BuildServiceProvider();
-        var handler = services.GetRequiredService<LoggerHandler>();
-
-        handler.LoggerCategoryName = categoryName ?? $"System.Net.Http.HttpClient.{builder.Name}.{nameof(LoggerHandler)}";
-        handler.LoggingOptions.LogLevel = logLevel;
-
-        handler.LoggingOptions.IgnoreRequestContent = ignoreRequestContent;
-        if (ignoreRequestHeaders is not null)
+        builder.Services.AddTransient<LoggingHandler>();
+        builder.Services.AddOptions<LoggingOptions>().Configure(logO =>
         {
-            handler.LoggingOptions.IgnoreRequestHeaders = ignoreRequestHeaders;
-        }
+            logO.CategoryName = categoryName ?? $"System.Net.Http.HttpClient.{builder.Name}.{nameof(LoggingHandler)}";
+            logO.Level = logLevel;
+            logO.RequestContent = ignoreRequestContent;
+            logO.ResponseContent = ignoreResponseContent;
+            if (ignoreRequestHeaders != null)
+            {
+                logO.RequestHeaders = ignoreRequestHeaders;
+            }
+            if (ignoreResponseHeaders != null)
+            {
+                logO.ResponseHeaders = ignoreResponseHeaders;
+            }
+        });
+        //var services = builder.Services.BuildServiceProvider();
+        //var handler = services.GetRequiredService<LoggerHandler>();
 
-        if (ignoreResponseHeaders is not null)
-        {
-            handler.LoggingOptions.IgnoreResponseHeaders = ignoreResponseHeaders;
-        }
-        handler.LoggingOptions.IgnoreResponseContent = ignoreResponseContent;
+        //handler.LoggerCategoryName = categoryName ?? $"System.Net.Http.HttpClient.{builder.Name}.{nameof(LoggerHandler)}";
+        //handler.LoggingOptions.LogLevel = logLevel;
 
-        builder.AddHttpMessageHandler(h => { return handler; });
+        //handler.LoggingOptions.IgnoreRequestContent = ignoreRequestContent;
+        //if (ignoreRequestHeaders is not null)
+        //{
+        //    handler.LoggingOptions.IgnoreRequestHeaders = ignoreRequestHeaders;
+        //}
+
+        //if (ignoreResponseHeaders is not null)
+        //{
+        //    handler.LoggingOptions.IgnoreResponseHeaders = ignoreResponseHeaders;
+        //}
+        //handler.LoggingOptions.IgnoreResponseContent = ignoreResponseContent;
+
+        //builder.AddHttpMessageHandler(h => { return handler; });
+        builder.AddHttpMessageHandler<LoggingHandler>();
 
         return builder;
     }

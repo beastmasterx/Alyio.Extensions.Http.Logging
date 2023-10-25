@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
-    <VersionPrefix>2.0.1</VersionPrefix>
+    <VersionPrefix>3.0.0</VersionPrefix>
     <Copyright>Copyright (c) 2022 ROY</Copyright>
     <Description>Reading and logging the HTTP request message and the HTTP response message.</Description>
     <Authors>ROY</Authors>
