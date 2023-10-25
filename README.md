@@ -1,6 +1,6 @@
 # Alyio.Extensions.Http.Logging
 
-[![Build Status](https://github.com/qqbuby/Alyio.Extensions.Http.Logging/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/qqbuby/Alyio.Extensions.Http.Logging/actions/workflows/ci.yml)
+[![Build Status](https://github.com/ousiax/Alyio.Extensions.Http.Logging/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ousiax/Alyio.Extensions.Http.Logging/actions/workflows/ci.yml)
 
 **Alyio..Extensions.Http.Logging** extends the `HttpClientHandler` for logging the HTTP request message and the HTTP response message.
 
