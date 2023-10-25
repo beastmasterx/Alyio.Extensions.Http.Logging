@@ -4,6 +4,10 @@
 
 **Alyio..Extensions.Http.Logging** extends the `HttpClientHandler` for logging the HTTP request message and the HTTP response message.
 
+```sh
+dotnet add package Alyio.Extensions.Http.Logging --version 3.0.0
+```
+
 To use the `HttpClientHandler`, please use `IHttpClientBuilder.AddLoggerHandler` to add `LoggerHandler` as an handler into a specified `HttpClient`.
 
 For example, the follow is a sample logging section.
