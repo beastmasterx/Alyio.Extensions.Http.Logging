@@ -13,16 +13,14 @@ To use the `HttpClientHandler`, please use `IHttpClientBuilder.AddLoggerHandler`
 For example, the follow is a sample logging section.
 
 ```cs
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-
 var host = Host.CreateDefaultBuilder()
     .ConfigureServices((context, services) =>
     {
-        services.AddHttpClient<IOpenWeatherMapService, OpenWeatherMapService>(
-            configureClient => configureClient.BaseAddress = new Uri("http://samples.openweathermap.org"))
-            .AddLoggerHandler(ignoreRequestContent: false, ignoreResponseContent: false);
+        services.AddHttpClient<IOpenWeatherMapService, OpenWeatherMapService>(client =>
+        {
+            client.BaseAddress = new Uri("http://samples.openweathermap.org");
+        })
+        .AddLoggerHandler(ignoreRequestContent: false, ignoreResponseContent: false);
 
         services.AddHostedService<OpenWeatherMapHostedService>();
     })

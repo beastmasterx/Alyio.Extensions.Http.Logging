@@ -5,9 +5,11 @@ using Microsoft.Extensions.Logging;
 var host = Host.CreateDefaultBuilder()
     .ConfigureServices((context, services) =>
     {
-        services.AddHttpClient<IOpenWeatherMapService, OpenWeatherMapService>(
-            configureClient => configureClient.BaseAddress = new Uri("http://samples.openweathermap.org"))
-            .AddLoggerHandler(ignoreRequestContent: false, ignoreResponseContent: false);
+        services.AddHttpClient<IOpenWeatherMapService, OpenWeatherMapService>(client =>
+        {
+            client.BaseAddress = new Uri("http://samples.openweathermap.org");
+        })
+        .AddLoggerHandler(ignoreRequestContent: false, ignoreResponseContent: false);
 
         services.AddHostedService<OpenWeatherMapHostedService>();
     })
