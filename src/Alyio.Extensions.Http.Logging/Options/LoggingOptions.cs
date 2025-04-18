@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿// MIT License
+
 using Microsoft.Extensions.Logging;
 
 namespace Alyio.Extensions.Http.Logging;
@@ -15,7 +16,7 @@ public sealed class LoggingOptions
     public string? CategoryName { get; set; }
 
     /// <summary>
-    /// Gets or sets a <see cref="Level"/> value that whether the logger is enalble; The default is <see cref="LogLevel.Information" />.
+    /// Gets or sets a <see cref="Level"/> value that whether the logger is enabled; The default is <see cref="LogLevel.Information" />.
     /// </summary>
     public LogLevel Level { get; set; } = LogLevel.Information;
 

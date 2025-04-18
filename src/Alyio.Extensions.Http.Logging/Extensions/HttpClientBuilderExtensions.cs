@@ -1,11 +1,12 @@
+// MIT License
+
 using Alyio.Extensions.Http.Logging;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// Extension mehtods for <see cref="IHttpClientBuilder"/>.
+/// Extension methods for <see cref="IHttpClientBuilder"/>.
 /// </summary>
 public static class HttpClientBuilderExtensions
 {
@@ -14,7 +15,7 @@ public static class HttpClientBuilderExtensions
     /// </summary>
     /// <param name="builder">The <see cref="IHttpClientBuilder" /></param>
     /// <param name="categoryName"></param>
-    /// <param name="logLevel">A <see cref="LogLevel"/> value indicates whether the logger is enalble; The default is <see cref="LogLevel.Information" />.</param>
+    /// <param name="logLevel">A <see cref="LogLevel"/> value indicates whether the logger is enabled; The default is <see cref="LogLevel.Information" />.</param>
     /// <param name="ignoreRequestContent">A <see cref="bool"/> value that indicates to ignore the request content. The default is true.</param>
     /// <param name="ignoreResponseContent">A <see cref="bool"/> value that indicates to ignore the response content. The default is true.</param>
     /// <param name="ignoreRequestHeaders">A <see cref="string"/> array to ignore the specified headers of <see cref="System.Net.Http.HttpRequestMessage.Headers"/>.</param>

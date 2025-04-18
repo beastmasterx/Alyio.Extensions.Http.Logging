@@ -1,10 +1,11 @@
-﻿using System;
+﻿// MIT License
+
 using System.Diagnostics;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
+// TODO: CA1848: Use the LoggerMessage delegates
+#pragma warning disable CA1848 // Use the LoggerMessage delegates
 
 namespace Alyio.Extensions.Http.Logging
 {
@@ -16,7 +17,7 @@ namespace Alyio.Extensions.Http.Logging
         private readonly string DoubleNewLine = Environment.NewLine + Environment.NewLine;
 
         private int _requestCount;
-        private ILogger _logger;
+        private readonly ILogger _logger;
         private readonly LoggingOptions _logO;
 
         /// <summary>
@@ -27,7 +28,7 @@ namespace Alyio.Extensions.Http.Logging
         public LoggingHandler(ILoggerFactory loggerFactory, IOptions<LoggingOptions> logOptions)
         {
             _logO = logOptions.Value;
-            _logger = loggerFactory.CreateLogger(_logO.CategoryName ?? this.GetType().FullName!);
+            _logger = loggerFactory.CreateLogger(_logO.CategoryName ?? GetType().FullName!);
         }
 
         /// <summary>
@@ -79,10 +80,12 @@ namespace Alyio.Extensions.Http.Logging
                 Interlocked.Decrement(ref _requestCount);
             }
 
-            var responseRawMessage = await responseMessage.ReadRawMessageAsync(_logO.ResponseContent, _logO.ResponseHeaders);
+            string responseRawMessage = await responseMessage.ReadRawMessageAsync(_logO.ResponseContent, _logO.ResponseHeaders);
             _logger.Log(_logO.Level, "Response-Message: {Elapsed}ms{NewLine}{ResponseRawMessage}", watch.ElapsedMilliseconds, DoubleNewLine, responseRawMessage);
 
             return await Task.FromResult(responseMessage);
         }
     }
 }
+
+#pragma warning restore CA1848 // Use the LoggerMessage delegates

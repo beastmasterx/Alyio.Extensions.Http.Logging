@@ -1,40 +1,34 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿// MIT License
+
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-var host = Host.CreateDefaultBuilder()
-    .ConfigureServices((context, services) =>
+HostApplicationBuilder builder = Host.CreateApplicationBuilder();
+
+builder.Services
+    .AddHttpClient<IOpenWeatherMapService, OpenWeatherMapService>(client =>
     {
-        services.AddHttpClient<IOpenWeatherMapService, OpenWeatherMapService>(client =>
-        {
-            client.BaseAddress = new Uri("http://samples.openweathermap.org");
-        })
-        .AddLoggerHandler(ignoreRequestContent: false, ignoreResponseContent: false);
-
-        services.AddHostedService<OpenWeatherMapHostedService>();
+        client.BaseAddress = new Uri("http://samples.openweathermap.org");
     })
-    .ConfigureLogging(logging =>
-    {
-        logging.SetMinimumLevel(LogLevel.Warning);
-        logging.AddFilter("System.Net.Http.HttpClient.IOpenWeatherMapService.LoggingHandler", LogLevel.Information);
-    })
-    .UseConsoleLifetime();
+    .AddLoggerHandler(ignoreRequestContent: false, ignoreResponseContent: false);
 
-await host.RunConsoleAsync();
+builder.Services.AddHostedService<OpenWeatherMapHostedService>();
+
+builder.Logging
+    .SetMinimumLevel(LogLevel.Warning)
+    .AddFilter("System.Net.Http.HttpClient", LogLevel.Information);
+
+IHost app = builder.Build();
+
+await app.StartAsync();
 
 
-sealed class OpenWeatherMapHostedService : IHostedService
+sealed class OpenWeatherMapHostedService(IOpenWeatherMapService weatherMapService) : IHostedService
 {
-    private readonly IOpenWeatherMapService _openWeatherMap;
-
-    public OpenWeatherMapHostedService(IOpenWeatherMapService weatherMapService)
-    {
-        _openWeatherMap = weatherMapService;
-    }
-
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        return _openWeatherMap.GetAsync();
+        return weatherMapService.GetAsync();
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
@@ -48,17 +42,10 @@ internal interface IOpenWeatherMapService
     Task GetAsync();
 }
 
-sealed class OpenWeatherMapService : IOpenWeatherMapService
+sealed class OpenWeatherMapService(HttpClient client) : IOpenWeatherMapService
 {
-    private readonly HttpClient _client;
-
-    public OpenWeatherMapService(HttpClient client)
-    {
-        _client = client;
-    }
-
     public Task GetAsync()
     {
-        return _client.GetAsync("/data/2.5/weather?q=London,uk&appid=b1b15e88fa797225412429c1c50c122a1");
+        return client.GetAsync("/data/2.5/weather?q=London,uk&appid=b1b15e88fa797225412429c1c50c122a1");
     }
 }

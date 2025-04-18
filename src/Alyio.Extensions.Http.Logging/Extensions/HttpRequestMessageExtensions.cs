@@ -1,13 +1,12 @@
-﻿using System.IO;
-using System.Linq;
-using System.Net.Http;
+﻿// MIT License
+
+using System.Globalization;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Alyio.Extensions;
 
 /// <summary>
-/// Extension mehtods for <see cref="HttpRequestMessage"/>.
+/// Extension methods for <see cref="HttpRequestMessage"/>.
 /// </summary>
 public static class HttpRequestMessageExtensions
 {
@@ -20,23 +19,23 @@ public static class HttpRequestMessageExtensions
     /// <returns>The raw http message of <see cref="HttpRequestMessage"/>.</returns>
     public static async Task<string> ReadRawMessageAsync(this HttpRequestMessage request, bool ignoreContent = false, params string[] ignoreHeaders)
     {
-        StringBuilder strBuilder = new StringBuilder(128);
-        strBuilder.Append($"{request.Method} {request.RequestUri} HTTP/{request.Version}\r\n");
+        StringBuilder strBuilder = new(128);
+        strBuilder.Append(CultureInfo.InvariantCulture, $"{request.Method} {request.RequestUri} HTTP/{request.Version}\r\n");
 
-        foreach (var header in request.Headers)
+        foreach (KeyValuePair<string, IEnumerable<string>> header in request.Headers)
         {
             if (ignoreHeaders.Contains(header.Key)) { continue; }
-            strBuilder.Append($"{header.Key}: {string.Join(",", header.Value)}\r\n");
+            strBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}\r\n");
         }
         if (!ignoreContent && request.Content != null)
         {
-            foreach (var header in request.Content.Headers)
+            foreach (KeyValuePair<string, IEnumerable<string>> header in request.Content.Headers)
             {
-                strBuilder.Append($"{header.Key}: {string.Join(",", header.Value)}\r\n");
+                strBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}\r\n");
             }
             strBuilder.Append("\r\n");
 
-            var contentStream = await request.Content.ReadAsStreamAsync();
+            Stream contentStream = await request.Content.ReadAsStreamAsync();
             var dumpContentStream = new MemoryStream();
             await contentStream.CopyToAsync(dumpContentStream);
             dumpContentStream.Position = 0;
@@ -55,7 +54,7 @@ public static class HttpRequestMessageExtensions
 
                 dumpContentStream.Position = 0;
                 var newContent = new StreamContent(dumpContentStream);
-                foreach (var header in request.Content.Headers)
+                foreach (KeyValuePair<string, IEnumerable<string>> header in request.Content.Headers)
                 {
                     newContent.Headers.TryAddWithoutValidation(header.Key, header.Value);
                 }

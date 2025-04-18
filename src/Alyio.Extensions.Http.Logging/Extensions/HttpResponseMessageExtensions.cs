@@ -1,13 +1,12 @@
-﻿using System.IO;
-using System.Linq;
-using System.Net.Http;
+﻿// MIT License
+
+using System.Globalization;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Alyio.Extensions;
 
 /// <summary>
-/// Extension mehtods for <see cref="HttpResponseMessage"/>.
+/// Extension methods for <see cref="HttpResponseMessage"/>.
 /// </summary>
 public static class HttpResponseMessageExtensions
 {
@@ -20,24 +19,24 @@ public static class HttpResponseMessageExtensions
     /// <returns>The raw http message of <see cref="HttpResponseMessage"/>.</returns>
     public static async Task<string> ReadRawMessageAsync(this HttpResponseMessage response, bool ignoreContent = false, params string[] ignoreHeaders)
     {
-        StringBuilder strBuilder = new StringBuilder(128);
-        strBuilder.Append($"HTTP/{response.Version} {(int)response.StatusCode} {response.ReasonPhrase}\r\n");
-        foreach (var header in response.Headers)
+        StringBuilder strBuilder = new(128);
+        strBuilder.Append(CultureInfo.InvariantCulture, $"HTTP/{response.Version} {(int)response.StatusCode} {response.ReasonPhrase}\r\n");
+        foreach (KeyValuePair<string, IEnumerable<string>> header in response.Headers)
         {
             if (ignoreHeaders.Contains(header.Key)) { continue; }
-            strBuilder.Append($"{header.Key}: {string.Join(",", header.Value)}\r\n");
+            strBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}\r\n");
         }
         if (!ignoreContent && response.Content != null)
         {
-            foreach (var header in response.Content.Headers)
+            foreach (KeyValuePair<string, IEnumerable<string>> header in response.Content.Headers)
             {
-                strBuilder.Append($"{header.Key}: {string.Join(",", header.Value)}\r\n");
+                strBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}\r\n");
             }
             strBuilder.Append("\r\n");
-            var content = await response.Content.ReadAsStreamAsync();
+            Stream content = await response.Content.ReadAsStreamAsync();
             if (content.CanSeek)
             {
-                StreamReader reader = new StreamReader(content);
+                StreamReader reader = new(content);
                 strBuilder.Append(await reader.ReadToEndAsync());
                 content.Seek(0, SeekOrigin.Begin);
             }
@@ -46,21 +45,21 @@ public static class HttpResponseMessageExtensions
                 var memo = new MemoryStream();
                 await content.CopyToAsync(memo);
                 memo.Seek(0, SeekOrigin.Begin);
-                StreamReader reader = new StreamReader(memo);
+                StreamReader reader = new(memo);
                 strBuilder.Append(await reader.ReadToEndAsync());
                 memo.Seek(0, SeekOrigin.Begin);
-                var contentHeaders = response.Content.Headers;
+                System.Net.Http.Headers.HttpContentHeaders contentHeaders = response.Content.Headers;
                 response.Content = new StreamContent(memo);
                 response.Content.Headers.Clear();
-                foreach (var item in contentHeaders.Allow)
+                foreach (string item in contentHeaders.Allow)
                 {
                     response.Content.Headers.Allow.Add(item);
                 }
-                foreach (var item in contentHeaders.ContentEncoding)
+                foreach (string item in contentHeaders.ContentEncoding)
                 {
                     response.Content.Headers.ContentEncoding.Add(item);
                 }
-                foreach (var item in contentHeaders.ContentLanguage)
+                foreach (string item in contentHeaders.ContentLanguage)
                 {
                     response.Content.Headers.ContentLanguage.Add(item);
                 }
