@@ -5,7 +5,7 @@
 **Alyio..Extensions.Http.Logging** extends the `HttpClientHandler` for logging the HTTP request message and the HTTP response message.
 
 ```sh
-dotnet add package Alyio.Extensions.Http.Logging --version 3.0.0
+dotnet add package Alyio.Extensions.Http.Logging
 ```
 
 To use the `HttpClientHandler`, please use `IHttpClientBuilder.AddLoggerHandler` to add `LoggerHandler` as an handler into a specified `HttpClient`.
@@ -13,39 +13,34 @@ To use the `HttpClientHandler`, please use `IHttpClientBuilder.AddLoggerHandler`
 For example, the follow is a sample logging section.
 
 ```cs
-var host = Host.CreateDefaultBuilder()
-    .ConfigureServices((context, services) =>
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+
+HostApplicationBuilder builder = Host.CreateApplicationBuilder();
+
+builder.Services
+    .AddHttpClient<IOpenWeatherMapService, OpenWeatherMapService>(client =>
     {
-        services.AddHttpClient<IOpenWeatherMapService, OpenWeatherMapService>(client =>
-        {
-            client.BaseAddress = new Uri("http://samples.openweathermap.org");
-        })
-        .AddLoggerHandler(ignoreRequestContent: false, ignoreResponseContent: false);
-
-        services.AddHostedService<OpenWeatherMapHostedService>();
+        client.BaseAddress = new Uri("http://samples.openweathermap.org");
     })
-    .ConfigureLogging(logging =>
-    {
-        logging.SetMinimumLevel(LogLevel.Warning);
-        logging.AddFilter("System.Net.Http.HttpClient.IOpenWeatherMapService.LoggingHandler", LogLevel.Information);
-    })
-    .UseConsoleLifetime();
+    .AddLoggerHandler(ignoreRequestContent: false, ignoreResponseContent: false);
 
-await host.RunConsoleAsync();
+builder.Services.AddHostedService<OpenWeatherMapHostedService>();
 
+builder.Logging
+    .SetMinimumLevel(LogLevel.Warning)
+    .AddFilter("System.Net.Http.HttpClient", LogLevel.Information);
 
-sealed class OpenWeatherMapHostedService : IHostedService
+IHost app = builder.Build();
+
+await app.StartAsync();
+
+sealed class OpenWeatherMapHostedService(IOpenWeatherMapService weatherMapService) : IHostedService
 {
-    private readonly IOpenWeatherMapService _openWeatherMap;
-
-    public OpenWeatherMapHostedService(IOpenWeatherMapService weatherMapService)
-    {
-        _openWeatherMap = weatherMapService;
-    }
-
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        return _openWeatherMap.GetAsync();
+        return weatherMapService.GetAsync();
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
@@ -59,18 +54,11 @@ internal interface IOpenWeatherMapService
     Task GetAsync();
 }
 
-sealed class OpenWeatherMapService : IOpenWeatherMapService
+sealed class OpenWeatherMapService(HttpClient client) : IOpenWeatherMapService
 {
-    private readonly HttpClient _client;
-
-    public OpenWeatherMapService(HttpClient client)
-    {
-        _client = client;
-    }
-
     public Task GetAsync()
     {
-        return _client.GetAsync("/data/2.5/weather?q=London,uk&appid=b1b15e88fa797225412429c1c50c122a1");
+        return client.GetAsync("/data/2.5/weather?q=London,uk&appid=b1b15e88fa797225412429c1c50c122a1");
     }
 }
 ```
