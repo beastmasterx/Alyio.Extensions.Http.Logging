@@ -8,7 +8,7 @@
 dotnet add package Alyio.Extensions.Http.Logging
 ```
 
-To use the `HttpClientHandler`, please use `IHttpClientBuilder.AddLoggerHandler` to add `LoggerHandler` as an handler into a specified `HttpClient`.
+To use the `HttpClientHandler`, please use `IHttpClientBuilder.AddLoggerHandler` to add `LoggerHandler` as a handler into a specified `HttpClient`.
 
 For example, the follow is a sample logging section.
 
