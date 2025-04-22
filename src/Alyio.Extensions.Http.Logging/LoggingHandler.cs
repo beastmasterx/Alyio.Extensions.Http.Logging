@@ -4,9 +4,6 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-// TODO: CA1848: Use the LoggerMessage delegates
-#pragma warning disable CA1848 // Use the LoggerMessage delegates
-
 namespace Alyio.Extensions.Http.Logging
 {
     /// <summary>
@@ -14,7 +11,7 @@ namespace Alyio.Extensions.Http.Logging
     /// </summary>
     public sealed class LoggingHandler : DelegatingHandler
     {
-        private readonly string DoubleNewLine = Environment.NewLine + Environment.NewLine;
+        private static readonly string s_doubleNewLine = Environment.NewLine + Environment.NewLine;
 
         private int _requestCount;
         private readonly ILogger _logger;
@@ -51,7 +48,7 @@ namespace Alyio.Extensions.Http.Logging
 
         private async Task<HttpResponseMessage> SendCoreAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            _logger.Log(_logO.Level, "Request-Queue: {}", Interlocked.Increment(ref _requestCount));
+            _logger.RequestQueue(_logO.Level, Interlocked.Increment(ref _requestCount));
 
             Stopwatch watch = Stopwatch.StartNew();
 
@@ -61,17 +58,13 @@ namespace Alyio.Extensions.Http.Logging
 
             try
             {
-                _logger.Log(_logO.Level, "Request-Message: {NewLine}{RequestRawMessage}", DoubleNewLine, requestRawMessage);
+                _logger.RequestMessage(_logO.Level, s_doubleNewLine, requestRawMessage);
 
                 responseMessage = await base.SendAsync(request, cancellationToken);
             }
             catch (HttpRequestException ex)
             {
-                _logger.LogError(ex, "Request-Error: {Message}, elapsed: {ElapsedMilliseconds}ms{NewLine}{RequestRawMessage}",
-                    ex.Message,
-                    watch.ElapsedMilliseconds,
-                    DoubleNewLine,
-                    requestRawMessage);
+                _logger.RequestError(ex, ex.Message, watch.ElapsedMilliseconds, s_doubleNewLine, requestRawMessage);
 
                 throw;
             }
@@ -81,11 +74,10 @@ namespace Alyio.Extensions.Http.Logging
             }
 
             string responseRawMessage = await responseMessage.ReadRawMessageAsync(_logO.ResponseContent, _logO.ResponseHeaders);
-            _logger.Log(_logO.Level, "Response-Message: {Elapsed}ms{NewLine}{ResponseRawMessage}", watch.ElapsedMilliseconds, DoubleNewLine, responseRawMessage);
+            _logger.ResponseMessage(_logO.Level, watch.ElapsedMilliseconds, s_doubleNewLine, responseRawMessage);
 
             return await Task.FromResult(responseMessage);
         }
     }
 }
 
-#pragma warning restore CA1848 // Use the LoggerMessage delegates
