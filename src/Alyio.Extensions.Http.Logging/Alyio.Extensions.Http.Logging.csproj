@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <VersionPrefix>3.1.0</VersionPrefix>
-    <Copyright>Copyright (c) 2022 ROY</Copyright>
+    <Copyright>Copyright (c) 2025 Jon X</Copyright>
     <Description>Reading and logging the HTTP request message and the HTTP response message.</Description>
     <Authors>Jon.X</Authors>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
