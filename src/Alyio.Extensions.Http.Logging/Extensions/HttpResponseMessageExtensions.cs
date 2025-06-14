@@ -16,63 +16,71 @@ public static class HttpResponseMessageExtensions
     /// <param name="response">The <see cref="HttpResponseMessage"/>.</param>
     /// <param name="ignoreContent">A <see cref="bool"/> value that indicates to ignore the response content. The default is false.</param>
     /// <param name="ignoreHeaders">The specified <see cref="string"/> array to ignore the specified headers of <see cref="HttpResponseMessage.Headers"/>.</param>
+    /// <param name="cancellationToken">A <see cref="CancellationToken"/> that can be used to cancel the operation.</param>
     /// <returns>The raw http message of <see cref="HttpResponseMessage"/>.</returns>
-    public static async Task<string> ReadRawMessageAsync(this HttpResponseMessage response, bool ignoreContent = false, params string[] ignoreHeaders)
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="response"/> is null.</exception>
+    public static async Task<string> ReadRawMessageAsync(
+        this HttpResponseMessage response,
+        bool ignoreContent = false,
+        string[]? ignoreHeaders = null,
+        CancellationToken cancellationToken = default)
     {
-        StringBuilder strBuilder = new(128);
-        strBuilder.Append(CultureInfo.InvariantCulture, $"HTTP/{response.Version} {(int)response.StatusCode} {response.ReasonPhrase}\r\n");
+        ArgumentNullException.ThrowIfNull(response);
+
+        var strBuilder = new StringBuilder(128);
+        strBuilder.Append(CultureInfo.InvariantCulture, $"HTTP/{response.Version} {(int)response.StatusCode} {response.ReasonPhrase}");
+        strBuilder.Append(Environment.NewLine);
+
         foreach (KeyValuePair<string, IEnumerable<string>> header in response.Headers)
         {
-            if (ignoreHeaders.Contains(header.Key)) { continue; }
-            strBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}\r\n");
+            if (ignoreHeaders?.Contains(header.Key) == true) { continue; }
+            strBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}");
+            strBuilder.Append(Environment.NewLine);
         }
+
         if (!ignoreContent && response.Content != null)
         {
             foreach (KeyValuePair<string, IEnumerable<string>> header in response.Content.Headers)
             {
-                strBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}\r\n");
+                strBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}");
+                strBuilder.Append(Environment.NewLine);
             }
-            strBuilder.Append("\r\n");
-            Stream content = await response.Content.ReadAsStreamAsync();
+            strBuilder.Append(Environment.NewLine);
+
+            Stream content = await response.Content.ReadAsStreamAsync(cancellationToken);
             if (content.CanSeek)
             {
-                StreamReader reader = new(content);
-                strBuilder.Append(await reader.ReadToEndAsync());
+                var reader = new StreamReader(content, leaveOpen: true);
+                strBuilder.Append(await reader.ReadToEndAsync(cancellationToken));
+                reader.Dispose();
                 content.Seek(0, SeekOrigin.Begin);
             }
             else
             {
                 var memo = new MemoryStream();
-                await content.CopyToAsync(memo);
+                try
+                {
+                    await content.CopyToAsync(memo, cancellationToken);
+                    memo.Seek(0, SeekOrigin.Begin);
+                }
+                finally
+                {
+                    await content.DisposeAsync();
+                }
+
+                using var reader = new StreamReader(memo, leaveOpen: true);
+                strBuilder.Append(await reader.ReadToEndAsync(cancellationToken));
                 memo.Seek(0, SeekOrigin.Begin);
-                StreamReader reader = new(memo);
-                strBuilder.Append(await reader.ReadToEndAsync());
-                memo.Seek(0, SeekOrigin.Begin);
-                System.Net.Http.Headers.HttpContentHeaders contentHeaders = response.Content.Headers;
-                response.Content = new StreamContent(memo);
-                response.Content.Headers.Clear();
-                foreach (string item in contentHeaders.Allow)
+
+                var newContent = new StreamContent(memo);
+                foreach (KeyValuePair<string, IEnumerable<string>> header in response.Content.Headers)
                 {
-                    response.Content.Headers.Allow.Add(item);
+                    newContent.Headers.TryAddWithoutValidation(header.Key, header.Value);
                 }
-                foreach (string item in contentHeaders.ContentEncoding)
-                {
-                    response.Content.Headers.ContentEncoding.Add(item);
-                }
-                foreach (string item in contentHeaders.ContentLanguage)
-                {
-                    response.Content.Headers.ContentLanguage.Add(item);
-                }
-                response.Content.Headers.ContentDisposition = contentHeaders.ContentDisposition;
-                response.Content.Headers.ContentLength = contentHeaders.ContentLength;
-                response.Content.Headers.ContentLocation = contentHeaders.ContentLocation;
-                response.Content.Headers.ContentMD5 = contentHeaders.ContentMD5;
-                response.Content.Headers.ContentRange = contentHeaders.ContentRange;
-                response.Content.Headers.ContentType = contentHeaders.ContentType;
-                response.Content.Headers.Expires = contentHeaders.Expires;
-                response.Content.Headers.LastModified = contentHeaders.LastModified;
+                response.Content = newContent;
             }
         }
+
         return strBuilder.ToString();
     }
 }

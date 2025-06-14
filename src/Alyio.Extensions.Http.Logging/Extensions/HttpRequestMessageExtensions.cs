@@ -16,44 +16,63 @@ public static class HttpRequestMessageExtensions
     /// <param name="request">The <see cref="HttpRequestMessage"/>.</param>
     /// <param name="ignoreContent">A <see cref="bool"/> value that indicates to ignore the request content. The default is false.</param>
     /// <param name="ignoreHeaders">The specified <see cref="string"/> array to ignore the specified headers of <see cref="HttpRequestMessage.Headers"/>.</param>
+    /// <param name="cancellationToken">A <see cref="CancellationToken"/> that can be used to cancel the operation.</param>
     /// <returns>The raw http message of <see cref="HttpRequestMessage"/>.</returns>
-    public static async Task<string> ReadRawMessageAsync(this HttpRequestMessage request, bool ignoreContent = false, params string[] ignoreHeaders)
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="request"/> is null.</exception>
+    public static async Task<string> ReadRawMessageAsync(
+        this HttpRequestMessage request,
+        bool ignoreContent = false,
+        string[]? ignoreHeaders = null,
+        CancellationToken cancellationToken = default)
     {
-        StringBuilder strBuilder = new(128);
-        strBuilder.Append(CultureInfo.InvariantCulture, $"{request.Method} {request.RequestUri} HTTP/{request.Version}\r\n");
+        ArgumentNullException.ThrowIfNull(request);
+
+        var strBuilder = new StringBuilder(128);
+        strBuilder.Append(CultureInfo.InvariantCulture, $"{request.Method} {request.RequestUri} HTTP/{request.Version}");
+        strBuilder.Append(Environment.NewLine);
 
         foreach (KeyValuePair<string, IEnumerable<string>> header in request.Headers)
         {
-            if (ignoreHeaders.Contains(header.Key)) { continue; }
-            strBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}\r\n");
+            if (ignoreHeaders?.Contains(header.Key) == true) { continue; }
+            strBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}");
+            strBuilder.Append(Environment.NewLine);
         }
+
         if (!ignoreContent && request.Content != null)
         {
             foreach (KeyValuePair<string, IEnumerable<string>> header in request.Content.Headers)
             {
-                strBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}\r\n");
+                strBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}");
+                strBuilder.Append(Environment.NewLine);
             }
-            strBuilder.Append("\r\n");
+            strBuilder.Append(Environment.NewLine);
 
-            Stream contentStream = await request.Content.ReadAsStreamAsync();
-            var dumpContentStream = new MemoryStream();
-            await contentStream.CopyToAsync(dumpContentStream);
-            dumpContentStream.Position = 0;
+            Stream content = await request.Content.ReadAsStreamAsync(cancellationToken);
 
-            var reader = new StreamReader(dumpContentStream);
-            strBuilder.Append(await reader.ReadToEndAsync());
-
-            if (contentStream.CanSeek)
+            if (content.CanSeek)
             {
-                dumpContentStream.Dispose();
-                contentStream.Position = 0;
+                using var reader = new StreamReader(content, leaveOpen: true);
+                strBuilder.Append(await reader.ReadToEndAsync(cancellationToken));
+                content.Seek(0, SeekOrigin.Begin);
             }
             else
             {
-                contentStream.Dispose();
+                var memo = new MemoryStream();
+                try
+                {
+                    await content.CopyToAsync(memo, cancellationToken);
+                    memo.Seek(0, SeekOrigin.Begin);
+                }
+                finally
+                {
+                    await content.DisposeAsync();
+                }
 
-                dumpContentStream.Position = 0;
-                var newContent = new StreamContent(dumpContentStream);
+                using var reader = new StreamReader(memo, leaveOpen: true);
+                strBuilder.Append(await reader.ReadToEndAsync(cancellationToken));
+                memo.Seek(0, SeekOrigin.Begin);
+
+                var newContent = new StreamContent(content);
                 foreach (KeyValuePair<string, IEnumerable<string>> header in request.Content.Headers)
                 {
                     newContent.Headers.TryAddWithoutValidation(header.Key, header.Value);
@@ -61,6 +80,7 @@ public static class HttpRequestMessageExtensions
                 request.Content = newContent;
             }
         }
+
         return strBuilder.ToString();
     }
 }

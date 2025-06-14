@@ -3,69 +3,58 @@
 using Alyio.Extensions.Http.Logging;
 using Microsoft.Extensions.Logging;
 
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Microsoft.Extensions.DependencyInjection;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
 /// <summary>
-/// Extension methods for <see cref="IHttpClientBuilder"/>.
+/// Extension methods for <see cref="IHttpClientBuilder"/> that provide HTTP message logging functionality.
 /// </summary>
 public static class HttpClientBuilderExtensions
 {
     /// <summary>
-    /// Adds a logging delegate that will be used to log the http request and response message for a named <see cref="System.Net.Http.HttpClient" />.
+    /// Adds raw HTTP message logging to the <see cref="HttpClient" /> pipeline.
     /// </summary>
-    /// <param name="builder">The <see cref="IHttpClientBuilder" /></param>
-    /// <param name="categoryName"></param>
-    /// <param name="logLevel">A <see cref="LogLevel"/> value indicates whether the logger is enabled; The default is <see cref="LogLevel.Information" />.</param>
-    /// <param name="ignoreRequestContent">A <see cref="bool"/> value that indicates to ignore the request content. The default is true.</param>
-    /// <param name="ignoreResponseContent">A <see cref="bool"/> value that indicates to ignore the response content. The default is true.</param>
-    /// <param name="ignoreRequestHeaders">A <see cref="string"/> array to ignore the specified headers of <see cref="System.Net.Http.HttpRequestMessage.Headers"/>.</param>
-    /// <param name="ignoreResponseHeaders">A <see cref="string"/> array to ignore the specified headers of <see cref="System.Net.Http.HttpRequestMessage.Headers"/>.</param>
+    /// <param name="builder">The <see cref="IHttpClientBuilder" />.</param>
+    /// <param name="categoryName">The logger category name. If null, a default name will be used based on the client name.</param>
+    /// <param name="logLevel">The <see cref="LogLevel"/> to use for logging. Defaults to <see cref="LogLevel.Information" />.</param>
+    /// <param name="ignoreRequestContent">Whether to ignore the request content in logs. Defaults to true.</param>
+    /// <param name="ignoreResponseContent">Whether to ignore the response content in logs. Defaults to true.</param>
+    /// <param name="ignoreRequestHeaders">Headers to ignore in request logs.</param>
+    /// <param name="ignoreResponseHeaders">Headers to ignore in response logs.</param>
     /// <returns>An <see cref="IHttpClientBuilder" /> that can be used to configure the client.</returns>
-    public static IHttpClientBuilder AddLoggerHandler(
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="builder"/> is null.</exception>
+    public static IHttpClientBuilder AddHttpRawMessageLogging(
         this IHttpClientBuilder builder,
-         string? categoryName = null,
-         LogLevel logLevel = LogLevel.Information,
-         bool ignoreRequestContent = true,
-         bool ignoreResponseContent = true,
-         string[]? ignoreRequestHeaders = null,
-         string[]? ignoreResponseHeaders = null)
+        string? categoryName = null,
+        LogLevel logLevel = LogLevel.Information,
+        bool ignoreRequestContent = true,
+        bool ignoreResponseContent = true,
+        string[]? ignoreRequestHeaders = null,
+        string[]? ignoreResponseHeaders = null)
     {
-        builder.Services.AddTransient<LoggingHandler>();
-        builder.Services.AddOptions<LoggingOptions>().Configure(logO =>
+        ArgumentNullException.ThrowIfNull(builder);
+
+        builder.Services.AddTransient<HttpRawMessageLoggingHandler>();
+        builder.Services.AddOptions<HttpMessageLoggingOptions>().Configure(options =>
         {
-            logO.CategoryName = categoryName ?? $"System.Net.Http.HttpClient.{builder.Name}.{nameof(LoggingHandler)}";
-            logO.Level = logLevel;
-            logO.RequestContent = ignoreRequestContent;
-            logO.ResponseContent = ignoreResponseContent;
+            options.CategoryName = categoryName ?? $"System.Net.Http.HttpClient.{builder.Name}.{nameof(HttpRawMessageLoggingHandler)}";
+            options.Level = logLevel;
+            options.IgnoreRequestContent = ignoreRequestContent;
+            options.IgnoreResponseContent = ignoreResponseContent;
+
             if (ignoreRequestHeaders != null)
             {
-                logO.RequestHeaders = ignoreRequestHeaders;
+                options.IgnoreRequestHeaders = ignoreRequestHeaders;
             }
+
             if (ignoreResponseHeaders != null)
             {
-                logO.ResponseHeaders = ignoreResponseHeaders;
+                options.IgnoreResponseHeaders = ignoreResponseHeaders;
             }
         });
-        //var services = builder.Services.BuildServiceProvider();
-        //var handler = services.GetRequiredService<LoggerHandler>();
 
-        //handler.LoggerCategoryName = categoryName ?? $"System.Net.Http.HttpClient.{builder.Name}.{nameof(LoggerHandler)}";
-        //handler.LoggingOptions.LogLevel = logLevel;
-
-        //handler.LoggingOptions.IgnoreRequestContent = ignoreRequestContent;
-        //if (ignoreRequestHeaders is not null)
-        //{
-        //    handler.LoggingOptions.IgnoreRequestHeaders = ignoreRequestHeaders;
-        //}
-
-        //if (ignoreResponseHeaders is not null)
-        //{
-        //    handler.LoggingOptions.IgnoreResponseHeaders = ignoreResponseHeaders;
-        //}
-        //handler.LoggingOptions.IgnoreResponseContent = ignoreResponseContent;
-
-        //builder.AddHttpMessageHandler(h => { return handler; });
-        builder.AddHttpMessageHandler<LoggingHandler>();
+        builder.AddHttpMessageHandler<HttpRawMessageLoggingHandler>();
 
         return builder;
     }
