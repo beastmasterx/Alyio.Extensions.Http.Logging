@@ -1,55 +1,45 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.2.32616.157
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A8DC70BC-1D8A-4343-8141-2928D89A113E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{DD33730E-18C1-4404-BFCA-1BE196FF3E5A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Alyio.Extensions.Http.Logging", "src\Alyio.Extensions.Http.Logging\Alyio.Extensions.Http.Logging.csproj", "{75D218D9-F957-485C-805A-C4F69F037FE2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alyio.Extensions.Http.Logging", "src\Alyio.Extensions.Http.Logging\Alyio.Extensions.Http.Logging.csproj", "{CC1FD54E-3537-4554-A5EB-C4E78A34DD8B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{82E98D17-B42A-41D5-8F75-88A181DC713E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{DBF9B2CB-B1A5-4BD7-A7F9-5A3F4F0B694A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Alyio.Extensions.Http.Logging.Tests", "test\Alyio.Extensions.Http.Logging.Tests\Alyio.Extensions.Http.Logging.Tests.csproj", "{80FB4EDE-C88F-434E-9055-2401D91F4BE5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alyio.Extensions.Http.Logging.Tests", "test\Alyio.Extensions.Http.Logging.Tests\Alyio.Extensions.Http.Logging.Tests.csproj", "{CFBF7D14-7C67-4A21-A94F-7535D6CFC9FE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Alyio.Extensions.Http.Logging.Samples", "test\Alyio.Extensions.Http.Logging.Samples\Alyio.Extensions.Http.Logging.Samples.csproj", "{933D4DFA-665E-4C5A-8B94-7080D5080A57}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{2FE93E06-8241-4427-B29E-62D3D1BF8D45}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-		Directory.Build.props = Directory.Build.props
-		Directory.Packages.props = Directory.Packages.props
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alyio.Extensions.Http.Logging.Samples", "samples\Alyio.Extensions.Http.Logging.Samples\Alyio.Extensions.Http.Logging.Samples.csproj", "{134CF35B-742C-4F06-871E-9AA4B98A7CEE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{75D218D9-F957-485C-805A-C4F69F037FE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{75D218D9-F957-485C-805A-C4F69F037FE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{75D218D9-F957-485C-805A-C4F69F037FE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{75D218D9-F957-485C-805A-C4F69F037FE2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{80FB4EDE-C88F-434E-9055-2401D91F4BE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{80FB4EDE-C88F-434E-9055-2401D91F4BE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{80FB4EDE-C88F-434E-9055-2401D91F4BE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{80FB4EDE-C88F-434E-9055-2401D91F4BE5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{933D4DFA-665E-4C5A-8B94-7080D5080A57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{933D4DFA-665E-4C5A-8B94-7080D5080A57}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{933D4DFA-665E-4C5A-8B94-7080D5080A57}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{933D4DFA-665E-4C5A-8B94-7080D5080A57}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{75D218D9-F957-485C-805A-C4F69F037FE2} = {A8DC70BC-1D8A-4343-8141-2928D89A113E}
-		{80FB4EDE-C88F-434E-9055-2401D91F4BE5} = {82E98D17-B42A-41D5-8F75-88A181DC713E}
-		{933D4DFA-665E-4C5A-8B94-7080D5080A57} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CC1FD54E-3537-4554-A5EB-C4E78A34DD8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC1FD54E-3537-4554-A5EB-C4E78A34DD8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC1FD54E-3537-4554-A5EB-C4E78A34DD8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC1FD54E-3537-4554-A5EB-C4E78A34DD8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFBF7D14-7C67-4A21-A94F-7535D6CFC9FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFBF7D14-7C67-4A21-A94F-7535D6CFC9FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFBF7D14-7C67-4A21-A94F-7535D6CFC9FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFBF7D14-7C67-4A21-A94F-7535D6CFC9FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{134CF35B-742C-4F06-871E-9AA4B98A7CEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{134CF35B-742C-4F06-871E-9AA4B98A7CEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{134CF35B-742C-4F06-871E-9AA4B98A7CEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{134CF35B-742C-4F06-871E-9AA4B98A7CEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {572A1B83-25CA-438F-98E8-7E345B24B0ED}
+	GlobalSection(NestedProjects) = preSolution
+		{CC1FD54E-3537-4554-A5EB-C4E78A34DD8B} = {DD33730E-18C1-4404-BFCA-1BE196FF3E5A}
+		{CFBF7D14-7C67-4A21-A94F-7535D6CFC9FE} = {DBF9B2CB-B1A5-4BD7-A7F9-5A3F4F0B694A}
+		{134CF35B-742C-4F06-871E-9AA4B98A7CEE} = {2FE93E06-8241-4427-B29E-62D3D1BF8D45}
 	EndGlobalSection
 EndGlobal
