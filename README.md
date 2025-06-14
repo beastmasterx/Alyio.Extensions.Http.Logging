@@ -161,8 +161,5 @@ Version 4.0 introduces several breaking changes to improve the API and add new f
 Key changes in version 4.0:
 - Renamed `LoggerHandler` to `HttpRawMessageLoggingHandler` for better clarity
 - Renamed `AddLoggerHandler` to `AddHttpRawMessageLogging` to better describe its purpose
-- Added support for configuring log category names
-- Added support for configuring log levels
-- Added support for ignoring specific request and response headers
 - Improved performance and memory usage
 - Updated to target .NET 8.0
