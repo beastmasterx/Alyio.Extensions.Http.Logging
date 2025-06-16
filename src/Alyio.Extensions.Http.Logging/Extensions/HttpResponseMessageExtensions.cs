@@ -38,7 +38,7 @@ public static class HttpResponseMessageExtensions
             strBuilder.Append(Environment.NewLine);
         }
 
-        if (!ignoreContent && response.Content != null)
+        if (response.Content != null)
         {
             foreach (KeyValuePair<string, IEnumerable<string>> header in response.Content.Headers)
             {
@@ -47,36 +47,10 @@ public static class HttpResponseMessageExtensions
             }
             strBuilder.Append(Environment.NewLine);
 
-            Stream content = await response.Content.ReadAsStreamAsync(cancellationToken);
-            if (content.CanSeek)
+            if (!ignoreContent)
             {
-                var reader = new StreamReader(content, leaveOpen: true);
-                strBuilder.Append(await reader.ReadToEndAsync(cancellationToken));
-                reader.Dispose();
-                content.Seek(0, SeekOrigin.Begin);
-            }
-            else
-            {
-                var memo = new MemoryStream();
-                try
-                {
-                    await content.CopyToAsync(memo, cancellationToken);
-                    memo.Seek(0, SeekOrigin.Begin);
-                }
-                finally
-                {
-                    await content.DisposeAsync();
-                }
-
-                using var reader = new StreamReader(memo, leaveOpen: true);
-                strBuilder.Append(await reader.ReadToEndAsync(cancellationToken));
-                memo.Seek(0, SeekOrigin.Begin);
-
-                var newContent = new StreamContent(memo);
-                foreach (KeyValuePair<string, IEnumerable<string>> header in response.Content.Headers)
-                {
-                    newContent.Headers.TryAddWithoutValidation(header.Key, header.Value);
-                }
+                (string text, HttpContent newContent) = await response.Content.ReadContentAsStringAsync(cancellationToken);
+                strBuilder.Append(text);
                 response.Content = newContent;
             }
         }
