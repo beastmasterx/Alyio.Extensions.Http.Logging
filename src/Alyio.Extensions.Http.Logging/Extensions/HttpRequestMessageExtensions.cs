@@ -38,7 +38,7 @@ public static class HttpRequestMessageExtensions
             strBuilder.Append(Environment.NewLine);
         }
 
-        if (!ignoreContent && request.Content != null)
+        if (request.Content != null)
         {
             foreach (KeyValuePair<string, IEnumerable<string>> header in request.Content.Headers)
             {
@@ -46,7 +46,10 @@ public static class HttpRequestMessageExtensions
                 strBuilder.Append(Environment.NewLine);
             }
             strBuilder.Append(Environment.NewLine);
+        }
 
+        if (!ignoreContent && request.Content != null)
+        {
             Stream content = await request.Content.ReadAsStreamAsync(cancellationToken);
 
             if (content.CanSeek)
