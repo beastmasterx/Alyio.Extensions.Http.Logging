@@ -91,7 +91,7 @@ public static class HttpRequestMessageExtensions
 
                         if (!ignoreContent)
                         {
-                            (string contentString, HttpContent newContent) = await content.ReadContentAsStringAsync(cancellationToken);
+                            (string contentString, HttpContent newContent) = await content.ReadRawMessageAsync(cancellationToken);
                             strBuilder.Append(contentString);
                             strBuilder.Append(Environment.NewLine);
                             duplicatedFormData.Add(newContent);
@@ -104,7 +104,7 @@ public static class HttpRequestMessageExtensions
             }
             else if (!ignoreContent)
             {
-                (string contentString, HttpContent newContent) = await request.Content.ReadContentAsStringAsync(cancellationToken);
+                (string contentString, HttpContent newContent) = await request.Content.ReadRawMessageAsync(cancellationToken);
                 request.Content = newContent;
                 strBuilder.Append(contentString);
             }

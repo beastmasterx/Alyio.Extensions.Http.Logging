@@ -49,7 +49,7 @@ public static class HttpResponseMessageExtensions
 
             if (!ignoreContent)
             {
-                (string text, HttpContent newContent) = await response.Content.ReadContentAsStringAsync(cancellationToken);
+                (string text, HttpContent newContent) = await response.Content.ReadRawMessageAsync(cancellationToken);
                 strBuilder.Append(text);
                 response.Content = newContent;
             }

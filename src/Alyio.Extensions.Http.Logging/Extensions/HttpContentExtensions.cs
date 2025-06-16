@@ -1,9 +1,5 @@
 // MIT License
 
-using System.Globalization;
-using System.Text;
-using Microsoft.Net.Http.Headers;
-
 namespace Alyio.Extensions
 {
     /// <summary>
@@ -25,7 +21,7 @@ namespace Alyio.Extensions
         /// </list>
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="content"/> is null.</exception>
-        public static async Task<(string, HttpContent)> ReadContentAsStringAsync(this HttpContent content, CancellationToken cancellationToken = default)
+        public static async Task<(string message, HttpContent content)> ReadRawMessageAsync(this HttpContent content, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(content);
 
