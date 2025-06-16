@@ -134,5 +134,32 @@ namespace Alyio.Extensions.Http.Logging.Tests
             Assert.Contains("Content-Length: 10", raw);
             Assert.Contains("Content-Encoding: gzip", raw);
         }
+
+        [Fact]
+        public async Task ReadRawMessageAsync_WithMultipartFormData_ShouldIncludeFormData()
+        {
+            var content = new MultipartFormDataContent
+            {
+                { new StringContent("John X"), "full name" },
+                { new StringContent("john@example.com"), "email" },
+                { new StringContent("Hello, this is a file content"), "file", "test.txt" }
+            };
+
+            HttpRequestMessage message = new(HttpMethod.Post, "/foo/bar")
+            {
+                Content = content
+            };
+
+            string raw = await message.ReadRawMessageAsync();
+
+            // Verify multipart form data structure
+            Assert.Contains("Content-Type: multipart/form-data", raw);
+            Assert.Contains("name=\"full name\"", raw);
+            Assert.Contains("name=email", raw);
+            Assert.Contains("name=file; filename=test.txt", raw);
+            Assert.Contains("John X", raw);
+            Assert.Contains("john@example.com", raw);
+            Assert.Contains("Hello, this is a file content", raw);
+        }
     }
 }
