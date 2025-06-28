@@ -37,7 +37,7 @@ jobs:
         run: dotnet --info
 
       - name: Restore Dependencies
-        run: dotnet restore
+        run: dotnet restore /p:TargetFrameworks="${{ matrix.framework }}"
 
       - name: Build Project
         run: dotnet build --no-restore -c Release --framework ${{ matrix.framework }}
