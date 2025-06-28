@@ -15,13 +15,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{2FE9
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alyio.Extensions.Http.Logging.Samples", "samples\Alyio.Extensions.Http.Logging.Samples\Alyio.Extensions.Http.Logging.Samples.csproj", "{134CF35B-742C-4F06-871E-9AA4B98A7CEE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{CC1FD54E-3537-4554-A5EB-C4E78A34DD8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -37,9 +40,15 @@ Global
 		{134CF35B-742C-4F06-871E-9AA4B98A7CEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{134CF35B-742C-4F06-871E-9AA4B98A7CEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CC1FD54E-3537-4554-A5EB-C4E78A34DD8B} = {DD33730E-18C1-4404-BFCA-1BE196FF3E5A}
 		{CFBF7D14-7C67-4A21-A94F-7535D6CFC9FE} = {DBF9B2CB-B1A5-4BD7-A7F9-5A3F4F0B694A}
 		{134CF35B-742C-4F06-871E-9AA4B98A7CEE} = {2FE93E06-8241-4427-B29E-62D3D1BF8D45}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {25DE71E1-0622-48DA-921A-0844FCA7AC68}
 	EndGlobalSection
 EndGlobal

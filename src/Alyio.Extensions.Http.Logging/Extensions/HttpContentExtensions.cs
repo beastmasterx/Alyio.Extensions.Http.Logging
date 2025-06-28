@@ -31,7 +31,11 @@ namespace Alyio.Extensions
             if (contentStream.CanSeek)
             {
                 using var reader = new StreamReader(contentStream, leaveOpen: true);
+#if !NET6_0
                 text = await reader.ReadToEndAsync(cancellationToken);
+#else
+                text = await reader.ReadToEndAsync();
+#endif
                 contentStream.Seek(0, SeekOrigin.Begin);
             }
             else
@@ -48,7 +52,11 @@ namespace Alyio.Extensions
                 }
 
                 using var reader = new StreamReader(memo, leaveOpen: true);
+#if !NET6_0
                 text = await reader.ReadToEndAsync(cancellationToken);
+#else
+                text = await reader.ReadToEndAsync();
+#endif
                 memo.Seek(0, SeekOrigin.Begin);
 
                 var newContent = new StreamContent(memo);
