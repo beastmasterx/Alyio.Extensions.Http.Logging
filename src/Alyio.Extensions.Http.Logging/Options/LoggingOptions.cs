@@ -43,7 +43,7 @@ public sealed class HttpMessageLoggingOptions
     /// Headers with names in this collection will not be included in the logs.
     /// The default is an empty array.
     /// </remarks>
-    public string[] IgnoreRequestHeaders { get; set; } = [];
+    public string[] IgnoreRequestHeaders { get; set; } = Array.Empty<string>();
 
     /// <summary>
     /// Gets or sets whether to ignore the response content in logs.
@@ -61,5 +61,5 @@ public sealed class HttpMessageLoggingOptions
     /// Headers with names in this collection will not be included in the logs.
     /// The default is an empty array.
     /// </remarks>
-    public string[] IgnoreResponseHeaders { get; set; } = [];
+    public string[] IgnoreResponseHeaders { get; set; } = Array.Empty<string>();
 }

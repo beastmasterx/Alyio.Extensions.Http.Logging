@@ -98,7 +98,7 @@ namespace Alyio.Extensions.Http.Logging.Tests
             message.Headers.Add("X-Custom-Header", "custom-value");
 
             // Act
-            string raw = await message.ReadRawMessageAsync(ignoreHeaders: []);
+            string raw = await message.ReadRawMessageAsync(ignoreHeaders: Array.Empty<string>());
 
             // Assert
             Assert.Contains("HTTP/1.1 302 Found", raw);
@@ -119,7 +119,7 @@ namespace Alyio.Extensions.Http.Logging.Tests
             message.Headers.Add("X-Custom-Header", "custom-value");
 
             // Act
-            string raw = await message.ReadRawMessageAsync(ignoreHeaders: ["Location"]);
+            string raw = await message.ReadRawMessageAsync(ignoreHeaders: new string[] { "Location" });
 
             // Assert
             Assert.Contains("HTTP/1.1 302 Found", raw);
@@ -140,7 +140,7 @@ namespace Alyio.Extensions.Http.Logging.Tests
             message.Headers.Add("X-Custom-Header", "custom-value");
 
             // Act
-            string raw = await message.ReadRawMessageAsync(ignoreHeaders: ["Location", "X-Custom-Header"]);
+            string raw = await message.ReadRawMessageAsync(ignoreHeaders: new string[] { "Location", "X-Custom-Header" });
 
             // Assert
             Assert.Contains("HTTP/1.1 302 Found", raw);
@@ -237,7 +237,7 @@ namespace Alyio.Extensions.Http.Logging.Tests
             message.Headers.Add("X-Custom-Header3", "value3");
 
             // Act
-            string raw = await message.ReadRawMessageAsync(ignoreHeaders: ["X-Custom-Header1", "X-Custom-Header3"]);
+            string raw = await message.ReadRawMessageAsync(ignoreHeaders: new string[] { "X-Custom-Header1", "X-Custom-Header3" });
 
             // Assert
             Assert.DoesNotContain("X-Custom-Header1: value1", raw);

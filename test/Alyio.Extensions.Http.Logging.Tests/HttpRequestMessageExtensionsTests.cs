@@ -71,12 +71,12 @@ namespace Alyio.Extensions.Http.Logging.Tests
 
         public static TheoryData<string[]> GetIgnoreHeaders()
         {
-            return
-            [
-                ["Accept-Charset", "User-Agent"],
-                ["Authorization", "X-Custom-Header"],
-                ["Accept", "Content-Type"]
-            ];
+            return new TheoryData<string[]>
+            {
+                new string[]{ "Accept-Charset", "User-Agent" },
+                new string[]{ "Authorization", "X-Custom-Header" },
+                new string[]{ "Accept", "Content-Type" },
+            };
         }
 
         [Theory]
