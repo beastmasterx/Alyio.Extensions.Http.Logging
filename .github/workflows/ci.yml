@@ -41,13 +41,13 @@ jobs:
         run: dotnet --info
 
       - name: Restore Dependencies
-        run: dotnet restore /p:TargetFrameworks="${{ matrix.framework }}"
+        run: dotnet restore -p:TargetFrameworks="${{ matrix.framework }}"
 
       - name: Build Project
         run: dotnet build --no-restore -c Release --framework ${{ matrix.framework }}
 
       - name: Run Tests
-        run: dotnet test --no-build --no-restore -c Release --framework ${{ matrix.framework }} /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+        run: dotnet test --no-build --no-restore -c Release --framework ${{ matrix.framework }} -p:CollectCoverage=true -p:CoverletOutputFormat=opencover
 
   pack_and_publish:
     needs: build_and_test
@@ -72,7 +72,9 @@ jobs:
       - name: Pack NuGet Package
         run: |
           TAG_VERSION="${{ github.ref_name }}"
-          dotnet pack -c Release --output nupkg /p:PackageVersion=$TAG_VERSION
+          dotnet pack -c Release --output nupkg -p:PackageVersion=$TAG_VERSION
+          dotnet pack -c Release --output nupkg -p:PackageVersion=$TAG_VERSION -p:VersionSuffix=-10-preview -p:TargetFrameworks=net10.0
+
       - name: List NuGet Packages (nupkg/*)
         run: ls -l nupkg/*
 
