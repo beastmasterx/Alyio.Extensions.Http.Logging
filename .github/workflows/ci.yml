@@ -69,8 +69,8 @@ jobs:
       - name: Pack NuGet Package
         run: |
           TAG_VERSION="${{ github.ref_name }}"
-          dotnet pack -c Release --output nupkg -p:PackageVersion=$TAG_VERSION
-          dotnet pack -c Release --output nupkg -p:PackageVersion=$TAG_VERSION -p:VersionSuffix=-10-preview -p:TargetFrameworks=net10.0
+          dotnet pack --output nupkg -p:PackageVersion=$TAG_VERSION
+          dotnet pack --output nupkg -p:VersionPrefix=$TAG_VERSION -p:VersionSuffix=10-preview -p:TargetFrameworks=net10.0
 
       - name: List NuGet Packages (nupkg/*)
         run: ls -l nupkg/*

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net6.0;net8.0;net9.0</TargetFrameworks>
-    <Version>4.2.0</Version>
+    <VersionPrefix>4.2.0</VersionPrefix>
     <Copyright>Copyright (c) 2025 Jon X</Copyright>
     <Description>Reading and logging the HTTP request message and the HTTP response message.</Description>
     <Authors>Jon X</Authors>
