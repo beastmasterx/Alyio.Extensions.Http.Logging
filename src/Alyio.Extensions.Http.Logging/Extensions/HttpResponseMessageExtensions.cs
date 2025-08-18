@@ -16,6 +16,7 @@ public static class HttpResponseMessageExtensions
     /// <param name="response">The <see cref="HttpResponseMessage"/>.</param>
     /// <param name="ignoreContent">A <see cref="bool"/> value that indicates to ignore the response content. The default is false.</param>
     /// <param name="ignoreHeaders">The specified <see cref="string"/> array to ignore the specified headers of <see cref="HttpResponseMessage.Headers"/>.</param>
+    /// <param name="redactHeaders">The specified <see cref="string"/> array to redact the specified headers of <see cref="HttpResponseMessage.Headers"/>.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> that can be used to cancel the operation.</param>
     /// <returns>The raw http message of <see cref="HttpResponseMessage"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="response"/> is null.</exception>
@@ -23,38 +24,54 @@ public static class HttpResponseMessageExtensions
         this HttpResponseMessage response,
         bool ignoreContent = false,
         string[]? ignoreHeaders = null,
+        string[]? redactHeaders = null,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(response);
 
-        var strBuilder = new StringBuilder(128);
-        strBuilder.Append(CultureInfo.InvariantCulture, $"HTTP/{response.Version} {(int)response.StatusCode} {response.ReasonPhrase}");
-        strBuilder.Append(Environment.NewLine);
+        var rawMessageBuilder = new StringBuilder(128);
+        rawMessageBuilder.Append(CultureInfo.InvariantCulture, $"HTTP/{response.Version} {(int)response.StatusCode} {response.ReasonPhrase}");
+        rawMessageBuilder.Append(Environment.NewLine);
 
         foreach (KeyValuePair<string, IEnumerable<string>> header in response.Headers)
         {
             if (ignoreHeaders?.Contains(header.Key) == true) { continue; }
-            strBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}");
-            strBuilder.Append(Environment.NewLine);
+            if (redactHeaders?.Contains(header.Key) == true)
+            {
+                rawMessageBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: ***");
+            }
+            else
+            {
+                rawMessageBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}");
+            }
+            rawMessageBuilder.Append(Environment.NewLine);
         }
 
         if (response.Content != null)
         {
             foreach (KeyValuePair<string, IEnumerable<string>> header in response.Content.Headers)
             {
-                strBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}");
-                strBuilder.Append(Environment.NewLine);
+                if (ignoreHeaders?.Contains(header.Key) == true) { continue; }
+                if (redactHeaders?.Contains(header.Key) == true)
+                {
+                    rawMessageBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: ***");
+                }
+                else
+                {
+                    rawMessageBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}");
+                }
+                rawMessageBuilder.Append(Environment.NewLine);
             }
-            strBuilder.Append(Environment.NewLine);
+            rawMessageBuilder.Append(Environment.NewLine);
 
             if (!ignoreContent)
             {
                 (string text, HttpContent newContent) = await response.Content.ReadRawMessageAsync(cancellationToken);
-                strBuilder.Append(text);
+                rawMessageBuilder.Append(text);
                 response.Content = newContent;
             }
         }
 
-        return strBuilder.ToString();
+        return rawMessageBuilder.ToString();
     }
 }

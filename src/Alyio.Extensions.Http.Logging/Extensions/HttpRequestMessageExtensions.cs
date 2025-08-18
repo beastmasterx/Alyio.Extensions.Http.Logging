@@ -17,6 +17,7 @@ public static class HttpRequestMessageExtensions
     /// <param name="request">The <see cref="HttpRequestMessage"/>.</param>
     /// <param name="ignoreContent">A <see cref="bool"/> value that indicates to ignore the request content. The default is false.</param>
     /// <param name="ignoreHeaders">The specified <see cref="string"/> array to ignore the specified headers of <see cref="HttpRequestMessage.Headers"/>.</param>
+    /// <param name="redactHeaders">The specified <see cref="string"/> array to redact the specified headers of <see cref="HttpRequestMessage.Headers"/>.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> that can be used to cancel the operation.</param>
     /// <returns>The raw http message of <see cref="HttpRequestMessage"/> in the format:
     /// <code>
@@ -33,29 +34,45 @@ public static class HttpRequestMessageExtensions
         this HttpRequestMessage request,
         bool ignoreContent = false,
         string[]? ignoreHeaders = null,
+        string[]? redactHeaders = null,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var strBuilder = new StringBuilder(128);
-        strBuilder.Append(CultureInfo.InvariantCulture, $"{request.Method} {request.RequestUri} HTTP/{request.Version}");
-        strBuilder.Append(Environment.NewLine);
+        var rawMessageBuilder = new StringBuilder(128);
+        rawMessageBuilder.Append(CultureInfo.InvariantCulture, $"{request.Method} {request.RequestUri} HTTP/{request.Version}");
+        rawMessageBuilder.Append(Environment.NewLine);
 
         foreach (KeyValuePair<string, IEnumerable<string>> header in request.Headers)
         {
             if (ignoreHeaders?.Contains(header.Key) == true) { continue; }
-            strBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}");
-            strBuilder.Append(Environment.NewLine);
+            if (redactHeaders?.Contains(header.Key) == true)
+            {
+                rawMessageBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: ***");
+            }
+            else
+            {
+                rawMessageBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}");
+            }
+            rawMessageBuilder.Append(Environment.NewLine);
         }
 
         if (request.Content != null)
         {
             foreach (KeyValuePair<string, IEnumerable<string>> header in request.Content.Headers)
             {
-                strBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}");
-                strBuilder.Append(Environment.NewLine);
+                if (ignoreHeaders?.Contains(header.Key) == true) { continue; }
+                if (redactHeaders?.Contains(header.Key) == true)
+                {
+                    rawMessageBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: ***");
+                }
+                else
+                {
+                    rawMessageBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}");
+                }
+                rawMessageBuilder.Append(Environment.NewLine);
             }
-            strBuilder.Append(Environment.NewLine);
+            rawMessageBuilder.Append(Environment.NewLine);
 
             if (request.Content is MultipartFormDataContent originalFormData)
             {
@@ -70,46 +87,46 @@ public static class HttpRequestMessageExtensions
                 {
                     if (content.Headers.ContentDisposition != null)
                     {
-                        strBuilder.Append(CultureInfo.InvariantCulture, $"--{boundary}");
-                        strBuilder.Append(Environment.NewLine);
-                        strBuilder.Append(CultureInfo.InvariantCulture, $"{HeaderNames.ContentDisposition}: {content.Headers.ContentDisposition}");
-                        strBuilder.Append(Environment.NewLine);
+                        rawMessageBuilder.Append(CultureInfo.InvariantCulture, $"--{boundary}");
+                        rawMessageBuilder.Append(Environment.NewLine);
+                        rawMessageBuilder.Append(CultureInfo.InvariantCulture, $"{HeaderNames.ContentDisposition}: {content.Headers.ContentDisposition}");
+                        rawMessageBuilder.Append(Environment.NewLine);
                         if (content.Headers.ContentType != null)
                         {
-                            strBuilder.Append(CultureInfo.InvariantCulture, $"{HeaderNames.ContentType}: {content.Headers.ContentType}");
-                            strBuilder.Append(Environment.NewLine);
+                            rawMessageBuilder.Append(CultureInfo.InvariantCulture, $"{HeaderNames.ContentType}: {content.Headers.ContentType}");
+                            rawMessageBuilder.Append(Environment.NewLine);
                         }
-                        strBuilder.Append(Environment.NewLine);
+                        rawMessageBuilder.Append(Environment.NewLine);
                         foreach (KeyValuePair<string, IEnumerable<string>> header in content.Headers)
                         {
                             if (header.Key == HeaderNames.ContentDisposition || header.Key == HeaderNames.ContentType) { continue; }
 
-                            strBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}");
-                            strBuilder.Append(Environment.NewLine);
+                            rawMessageBuilder.Append(CultureInfo.InvariantCulture, $"{header.Key}: {string.Join(",", header.Value)}");
+                            rawMessageBuilder.Append(Environment.NewLine);
                         }
-                        strBuilder.Append(Environment.NewLine);
+                        rawMessageBuilder.Append(Environment.NewLine);
 
                         if (!ignoreContent)
                         {
                             (string contentString, HttpContent newContent) = await content.ReadRawMessageAsync(cancellationToken);
-                            strBuilder.Append(contentString);
-                            strBuilder.Append(Environment.NewLine);
+                            rawMessageBuilder.Append(contentString);
+                            rawMessageBuilder.Append(Environment.NewLine);
                             duplicatedFormData.Add(newContent);
                         }
                     }
                 }
-                strBuilder.Append(CultureInfo.InvariantCulture, $"--{boundary}--");
-                strBuilder.Append(Environment.NewLine);
+                rawMessageBuilder.Append(CultureInfo.InvariantCulture, $"--{boundary}--");
+                rawMessageBuilder.Append(Environment.NewLine);
                 request.Content = duplicatedFormData;
             }
             else if (!ignoreContent)
             {
                 (string contentString, HttpContent newContent) = await request.Content.ReadRawMessageAsync(cancellationToken);
                 request.Content = newContent;
-                strBuilder.Append(contentString);
+                rawMessageBuilder.Append(contentString);
             }
         }
 
-        return strBuilder.ToString();
+        return rawMessageBuilder.ToString();
     }
 }

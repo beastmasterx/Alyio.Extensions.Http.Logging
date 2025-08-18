@@ -79,6 +79,37 @@ namespace Alyio.Extensions.Http.Logging.Tests
             };
         }
 
+        public static TheoryData<string[]> GetRedactHeaders()
+        {
+            return new TheoryData<string[]>
+            {
+                new string[]{ "Accept-Charset", "User-Agent" },
+                new string[]{ "Authorization", "X-Custom-Header" },
+                new string[]{ "Accept", "Content-Type" },
+            };
+        }
+
+        [Theory]
+        [MemberData(nameof(GetRedactHeaders))]
+        public async Task ReadRawMessageAsync_WithRedactedHeaders_ShouldRedactSpecifiedHeaders(string[] redactHeaders)
+        {
+            HttpRequestMessage message = new(HttpMethod.Post, "/foo/bar");
+            message.Headers.Clear();
+            message.Headers.AcceptCharset.Add(new StringWithQualityHeaderValue("utf-8"));
+            message.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            message.Headers.UserAgent.Add(new ProductInfoHeaderValue("TestClient", "1.0"));
+            message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "token123");
+            message.Headers.TryAddWithoutValidation("X-Custom-Header", "custom-value");
+            message.Content = new StringContent("Hello World", Encoding.UTF8, "text/plain");
+
+            string raw = await message.ReadRawMessageAsync(redactHeaders: redactHeaders);
+
+            foreach (string header in redactHeaders)
+            {
+                Assert.Contains($"{header}: ***", raw);
+            }
+        }
+
         [Theory]
         [InlineData("GET")]
         [InlineData("POST")]

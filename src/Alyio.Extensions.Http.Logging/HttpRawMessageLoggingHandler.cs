@@ -54,7 +54,8 @@ namespace Alyio.Extensions.Http.Logging
             _logger.RequestQueue(_loggingOptions.Level, Interlocked.Increment(ref _activeRequestCount));
 
             var watch = Stopwatch.StartNew();
-            string requestRawMessage = await request.ReadRawMessageAsync(_loggingOptions.IgnoreRequestContent, _loggingOptions.IgnoreRequestHeaders, cancellationToken);
+            string requestRawMessage = await request.ReadRawMessageAsync(
+                _loggingOptions.IgnoreRequestContent, _loggingOptions.IgnoreRequestHeaders, _loggingOptions.RedactRequestHeaders, cancellationToken);
             HttpResponseMessage? responseMessage = null;
 
             try
@@ -72,35 +73,38 @@ namespace Alyio.Extensions.Http.Logging
                 Interlocked.Decrement(ref _activeRequestCount);
             }
 
-            await LogResponseMessageAsync(responseMessage, watch.ElapsedMilliseconds);
+            string responseRawMessage = await responseMessage.ReadRawMessageAsync(
+                 _loggingOptions.IgnoreResponseContent, _loggingOptions.IgnoreResponseHeaders, _loggingOptions.RedactResponseHeaders, cancellationToken);
+            await LogResponseMessageAsync(responseRawMessage, watch.ElapsedMilliseconds);
+
             return responseMessage;
         }
 
         /// <summary>
         /// Logs the raw HTTP request message.
         /// </summary>
-        private Task LogRequestMessageAsync(string requestRawMessage)
+        private ValueTask LogRequestMessageAsync(string requestRawMessage)
         {
             _logger.RequestMessage(_loggingOptions.Level, s_messageSeparator, requestRawMessage);
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         /// <summary>
         /// Logs any error that occurs during the HTTP request.
         /// </summary>
-        private Task LogRequestErrorAsync(HttpRequestException ex, long elapsedMilliseconds, string requestRawMessage)
+        private ValueTask LogRequestErrorAsync(HttpRequestException ex, long elapsedMilliseconds, string requestRawMessage)
         {
             _logger.RequestError(ex, ex.Message, elapsedMilliseconds, s_messageSeparator, requestRawMessage);
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         /// <summary>
         /// Logs the raw HTTP response message.
         /// </summary>
-        private async Task LogResponseMessageAsync(HttpResponseMessage responseMessage, long elapsedMilliseconds)
+        private ValueTask LogResponseMessageAsync(string responseRawMessage, long elapsedMilliseconds)
         {
-            string responseRawMessage = await responseMessage.ReadRawMessageAsync(_loggingOptions.IgnoreResponseContent, _loggingOptions.IgnoreResponseHeaders);
             _logger.ResponseMessage(_loggingOptions.Level, elapsedMilliseconds, s_messageSeparator, responseRawMessage);
+            return ValueTask.CompletedTask;
         }
     }
 }
