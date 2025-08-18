@@ -4,6 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+#if NET6_0
+Console.WriteLine("NOT SUPPORTED NET 6.0");
+#else
 HostApplicationBuilder builder = Host.CreateApplicationBuilder();
 
 // Configure the default HTTP client to log raw HTTP messages
@@ -61,3 +64,4 @@ sealed class OpenWeatherMapService(HttpClient client) : IOpenWeatherMapService
         return client.GetAsync("/data/2.5/weather?q=London,uk&appid=b1b15e88fa797225412429c1c50c122a1");
     }
 }
+#endif
