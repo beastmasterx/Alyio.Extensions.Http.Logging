@@ -44,10 +44,10 @@ jobs:
         run: dotnet restore -p:TargetFrameworks="${{ matrix.framework }}"
 
       - name: Build Project
-        run: dotnet build --no-restore -c Release --framework ${{ matrix.framework }}
+        run: dotnet build --no-restore -c Release -p:TargetFrameworks="${{ matrix.framework }}"
 
       - name: Run Tests
-        run: dotnet test --no-build --no-restore -c Release --framework ${{ matrix.framework }} -p:CollectCoverage=true -p:CoverletOutputFormat=opencover
+        run: dotnet test --no-build --no-restore -c Release -p:TargetFrameworks="${{ matrix.framework }}" -p:CollectCoverage=true -p:CoverletOutputFormat=opencover
 
   pack_and_publish:
     needs: build_and_test
@@ -65,9 +65,6 @@ jobs:
 
       - name: Display .NET Information
         run: dotnet --info
-
-      - name: Restore Dependencies
-        run: dotnet restore
 
       - name: Pack NuGet Package
         run: |
