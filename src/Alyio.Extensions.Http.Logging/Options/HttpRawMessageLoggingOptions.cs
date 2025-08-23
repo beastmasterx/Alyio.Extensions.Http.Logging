@@ -7,7 +7,7 @@ namespace Alyio.Extensions.Http.Logging;
 /// <summary>
 /// Provides programmatic configuration for HTTP message logging.
 /// </summary>
-public sealed class HttpMessageLoggingOptions
+public sealed class HttpRawMessageLoggingOptions
 {
     /// <summary>
     /// Gets or sets the category name for the logger.

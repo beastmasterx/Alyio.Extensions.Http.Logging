@@ -15,14 +15,14 @@ namespace Alyio.Extensions.Http.Logging
 
         private int _activeRequestCount;
         private readonly ILogger _logger;
-        private readonly HttpMessageLoggingOptions _loggingOptions;
+        private readonly HttpRawMessageLoggingOptions _loggingOptions;
 
         /// <summary>
         /// Creates an instance of a <see cref="HttpRawMessageLoggingHandler"/> class.
         /// </summary>
         /// <param name="loggerFactory">The <see cref="ILoggerFactory"/>.</param>
-        /// <param name="logOptions">The <see cref="HttpMessageLoggingOptions"/></param>
-        public HttpRawMessageLoggingHandler(ILoggerFactory loggerFactory, IOptions<HttpMessageLoggingOptions> logOptions)
+        /// <param name="logOptions">The <see cref="HttpRawMessageLoggingOptions"/></param>
+        public HttpRawMessageLoggingHandler(ILoggerFactory loggerFactory, IOptions<HttpRawMessageLoggingOptions> logOptions)
         {
             _loggingOptions = logOptions.Value;
             _logger = loggerFactory.CreateLogger(_loggingOptions.CategoryName ?? GetType().FullName!);
