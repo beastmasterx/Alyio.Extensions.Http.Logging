@@ -1,6 +1,11 @@
 # Alyio.Extensions.Http.Logging
 
+<<<<<<< HEAD
 [![Build Status](https://github.com/ousiax/Alyio.Extensions.Http.Logging/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ousiax/Alyio.Extensions.Http.Logging/actions/workflows/ci.yml)
+=======
+[![Build Status](https://github.com/alyiox/Alyio.Http.Diagnostics.Logging/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/alyiox/Alyio.Http.Diagnostics.Logging/actions/workflows/ci.yml)
+[![NuGet Badge](https://buildstats.info/nuget/Alyio.Http.Diagnostics.Logging)](https://www.nuget.org/packages/Alyio.Http.Diagnostics.Logging)
+>>>>>>> b5c161c (docs: add nuget badge)
 
 **Alyio.Extensions.Http.Logging** is a .NET library that provides deep visibility into the HTTP and HTTPS traffic in applications. It extends `HttpClientHandler` to provide detailed, raw logging of HTTP requests and responses.
 
