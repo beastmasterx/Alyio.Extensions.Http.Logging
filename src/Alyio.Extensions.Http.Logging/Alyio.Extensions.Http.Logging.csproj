@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFrameworks>net6.0;net8.0;net9.0</TargetFrameworks>
-    <VersionPrefix>4.2.0</VersionPrefix>
+    <VersionPrefix>4.3.0</VersionPrefix>
     <Copyright>Copyright (c) 2025 Jon X</Copyright>
-    <Description>Reading and logging the HTTP request message and the HTTP response message.</Description>
+    <Description>A .NET library for comprehensive and configurable logging of raw HTTP request and response messages.</Description>
     <Authors>Jon X</Authors>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -12,11 +12,11 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <IncludeSymbols>true</IncludeSymbols>
     <PackageTags>Extensions;Methods;HTTP;HttpRequestMessage;HttpResponseMessage;Logging</PackageTags>
-    <PackageProjectUrl>https://github.com/ousiax/Alyio.Extensions.Http.Logging</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/alyiox/Alyio.Extensions.Http.Logging</PackageProjectUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/ousiax/Alyio.Extensions.Http.Logging</RepositoryUrl>
+    <RepositoryUrl>https://github.com/alyiox/Alyio.Extensions.Http.Logging</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>

@@ -1,11 +1,7 @@
 # Alyio.Extensions.Http.Logging
 
-<<<<<<< HEAD
-[![Build Status](https://github.com/ousiax/Alyio.Extensions.Http.Logging/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ousiax/Alyio.Extensions.Http.Logging/actions/workflows/ci.yml)
-=======
-[![Build Status](https://github.com/alyiox/Alyio.Http.Diagnostics.Logging/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/alyiox/Alyio.Http.Diagnostics.Logging/actions/workflows/ci.yml)
-[![NuGet Badge](https://buildstats.info/nuget/Alyio.Http.Diagnostics.Logging)](https://www.nuget.org/packages/Alyio.Http.Diagnostics.Logging)
->>>>>>> b5c161c (docs: add nuget badge)
+[![Build Status](https://github.com/alyiox/Alyio.Extensions.Http.Logging/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/alyiox/Alyio.Extensions.Http.Logging/actions/workflows/ci.yml)
+[![NuGet Badge](https://buildstats.info/nuget/Alyio.Extensions.Http.Logging)](https://www.nuget.org/packages/Alyio.Extensions.Http.Logging)
 
 **Alyio.Extensions.Http.Logging** is a .NET library that provides deep visibility into the HTTP and HTTPS traffic in applications. It extends `HttpClientHandler` to provide detailed, raw logging of HTTP requests and responses.
 
@@ -13,7 +9,7 @@
 
 -   **Header Redaction**: You can now redact sensitive information from request and response headers in the logs. By default, the `Authorization` header is redacted from request headers.
 
-## Why Alyio.Http.Diagnostics.Logging?
+## Why Alyio.Extensions.Http.Logging?
 
 In complex systems, understanding the exact data being sent and received over HTTP is crucial for debugging, auditing, and ensuring security. While tools like OpenTelemetry provide excellent high-level telemetry, they often don't capture the full raw payload of HTTP messages.
 
@@ -21,7 +17,6 @@ This library provides the ground-truth of HTTP communication, which is useful fo
 - **Precision Debugging:** The exact headers and bodies of requests and responses can be inspected to quickly identify issues.
 - **Auditing and Compliance:** A detailed log of all HTTP interactions can be maintained for security and compliance purposes.
 - **Enhancing Existing Telemetry:** Existing telemetry solutions can be complemented with low-level details for drilling down into specific requests.
->>>>>>> eec810f (docs: Improve README.md)
 
 ## Key Features
 
