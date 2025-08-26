@@ -1,13 +1,9 @@
 # Alyio.Extensions.Http.Logging
 
 [![Build Status](https://github.com/alyiox/Alyio.Extensions.Http.Logging/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/alyiox/Alyio.Extensions.Http.Logging/actions/workflows/ci.yml)
-[![NuGet Badge](https://buildstats.info/nuget/Alyio.Extensions.Http.Logging)](https://www.nuget.org/packages/Alyio.Extensions.Http.Logging)
+![NuGet Version](https://img.shields.io/nuget/v/alyio.extensions.http.logging)
 
 **Alyio.Extensions.Http.Logging** is a .NET library that provides deep visibility into the HTTP and HTTPS traffic in applications. It extends `HttpClientHandler` to provide detailed, raw logging of HTTP requests and responses.
-
-## What's New in 4.2.0
-
--   **Header Redaction**: You can now redact sensitive information from request and response headers in the logs. By default, the `Authorization` header is redacted from request headers.
 
 ## Why Alyio.Extensions.Http.Logging?
 
@@ -169,49 +165,6 @@ info: System.Net.Http.HttpClient.IOpenWeatherMapService.HttpRawMessageLoggingHan
       {"coord":{"lon":-0.13,"lat":51.51},"weather":[{"id":300,"main":"Drizzle","description":"light intensity drizzle","icon":"09d"}],"base":"stations","main":{"temp":280.32,"pressure":1012,"humidity":81,"temp_min":279.15,"temp_max":281.15},"visibility":10000,"wind":{"speed":4.1,"deg":80},"clouds":{"all":90},"dt":1485789600,"sys":{"type":1,"id":5091,"message":0.0103,"country":"GB","sunrise":1485762037,"sunset":1485794875},"id":2643743,"name":"London","cod":200}
 ^C
 ```
-
-## Migration from 3.x to 4.x
-
-Version 4.0 introduces several breaking changes to improve the API and add new features. Here's how to migrate from version 3.x:
-
-1.  Update the package reference to version 4.0 or later:
-
-    ```xml
-    <PackageReference Include="Alyio.Extensions.Http.Logging" Version="4.2.0" />
-    ```
-
-2.  Replace `AddLoggerHandler` with `AddHttpRawMessageLogging`:
-
-    ```csharp
-    // Old (3.x)
-    .AddLoggerHandler(ignoreRequestContent: false, ignoreResponseContent: false)
-
-    // New (4.x)
-    .AddHttpRawMessageLogging(options =>
-    {
-        options.IgnoreRequestContent = false;
-        options.IgnoreResponseContent = false;
-        options.IgnoreRequestHeaders = new[] { "User-Agent" };
-        options.IgnoreResponseHeaders = new[] { "Date" };
-    });
-    ```
-
-3.  Update log category names in your logging configuration:
-
-    ```csharp
-    // Old (3.x)
-    .AddFilter("System.Net.Http.HttpClient.*.LoggerHandler", LogLevel.Information)
-
-    // New (4.x)
-    .AddFilter("System.Net.Http.HttpClient.*.HttpRawMessageLoggingHandler", LogLevel.Information)
-    ```
-
-### Key Changes in Version 4.0
-
--   Renamed `LoggerHandler` to `HttpRawMessageLoggingHandler` for better clarity.
--   Renamed `AddLoggerHandler` to `AddHttpRawMessageLogging` to better describe its purpose.
--   Improved performance and memory usage.
--   Updated to target .NET 8.0.
 
 ## Contributing
 
