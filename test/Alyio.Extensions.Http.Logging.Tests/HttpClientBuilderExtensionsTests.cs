@@ -57,23 +57,67 @@ public sealed class HttpClientBuilderExtensionsTests
         Assert.Single(loggingHandlers);
     }
 
+    [Fact]
+    public void AddHttpRawMessageLogging_WithMultipleClients_DoesNotInterfere()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        IHttpClientBuilder builder1 = services.AddHttpClient("TestClient1");
+        IHttpClientBuilder builder2 = services.AddHttpClient("TestClient2");
+
+        // Act
+        builder1.AddHttpRawMessageLogging();
+        builder2.AddHttpRawMessageLogging();
+
+        // Assert
+        HttpMessageHandler handler1 = GetPrimaryHttpMessageHandler(builder1);
+        IEnumerable<HttpRawMessageLoggingHandler> loggingHandlers1 = GetDelegatingHandlers(handler1).OfType<HttpRawMessageLoggingHandler>();
+
+        HttpMessageHandler handler2 = GetPrimaryHttpMessageHandler(builder2);
+        IEnumerable<HttpRawMessageLoggingHandler> loggingHandlers2 = GetDelegatingHandlers(handler2).OfType<HttpRawMessageLoggingHandler>();
+        Assert.Single(loggingHandlers1);
+        Assert.Single(loggingHandlers2);
+    }
+
+    [Fact]
+    public void RemoveHttpRawMessageLogging_ForOneClient_DoesNotAffectOtherClients()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        IHttpClientBuilder builder1 = services.AddHttpClient("TestClient1");
+        IHttpClientBuilder builder2 = services.AddHttpClient("TestClient2");
+
+        // Act
+        builder1.AddHttpRawMessageLogging();
+        builder2.RemoveHttpRawMessageLogging();
+
+        // Assert
+        HttpMessageHandler handler1 = GetPrimaryHttpMessageHandler(builder1);
+        IEnumerable<HttpRawMessageLoggingHandler> loggingHandlers1 = GetDelegatingHandlers(handler1).OfType<HttpRawMessageLoggingHandler>();
+
+        HttpMessageHandler handler2 = GetPrimaryHttpMessageHandler(builder2);
+        IEnumerable<HttpRawMessageLoggingHandler> loggingHandlers2 = GetDelegatingHandlers(handler2).OfType<HttpRawMessageLoggingHandler>();
+        Assert.Single(loggingHandlers1);
+        Assert.Empty(loggingHandlers2);
+    }
+
 #if NET8_0_OR_GREATER
     [Fact]
     public void ConfigureHttpClientDefaults_With_Add_And_Remove_Should_Behave_Correctly()
     {
         // Arrange
         var services = new ServiceCollection();
+        IHttpClientBuilder builder0 = services.AddHttpClient(Options.DefaultName); // default
         IHttpClientBuilder builder1 = services.AddHttpClient("TestClient1");
         IHttpClientBuilder builder2 = services.AddHttpClient("TestClient2");
-        IHttpClientBuilder builder3 = services.AddHttpClient(Options.DefaultName);
 
         // Act
         services.ConfigureHttpClientDefaults(b =>
         {
             b.AddHttpRawMessageLogging();
         });
-        builder1.AddHttpRawMessageLogging(); // This should be idempotent
-        builder2.RemoveHttpRawMessageLogging(); // This should remove the default one
+        builder1.AddHttpRawMessageLogging();
+        builder2.RemoveHttpRawMessageLogging();
 
         // Assert for TestClient1
         HttpMessageHandler handler1 = GetPrimaryHttpMessageHandler(builder1);
@@ -86,8 +130,8 @@ public sealed class HttpClientBuilderExtensionsTests
         Assert.Empty(loggingHandlers2);
 
         // Assert for Default Client
-        HttpMessageHandler handler3 = GetPrimaryHttpMessageHandler(builder3);
-        IEnumerable<HttpRawMessageLoggingHandler> loggingHandlers3 = GetDelegatingHandlers(handler3).OfType<HttpRawMessageLoggingHandler>();
+        HttpMessageHandler handler0 = GetPrimaryHttpMessageHandler(builder0);
+        IEnumerable<HttpRawMessageLoggingHandler> loggingHandlers3 = GetDelegatingHandlers(handler0).OfType<HttpRawMessageLoggingHandler>();
         Assert.Single(loggingHandlers3);
     }
 #endif

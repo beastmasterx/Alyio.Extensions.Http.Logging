@@ -2,7 +2,6 @@
 
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Alyio.Extensions.Http.Logging
 {
@@ -20,12 +19,12 @@ namespace Alyio.Extensions.Http.Logging
         /// <summary>
         /// Creates an instance of a <see cref="HttpRawMessageLoggingHandler"/> class.
         /// </summary>
-        /// <param name="loggerFactory">The <see cref="ILoggerFactory"/>.</param>
-        /// <param name="logOptions">The <see cref="HttpRawMessageLoggingOptions"/></param>
-        public HttpRawMessageLoggingHandler(ILoggerFactory loggerFactory, IOptions<HttpRawMessageLoggingOptions> logOptions)
+        /// <param name="logger">The <see cref="ILogger"/>.</param>
+        /// <param name="loggingOptions">The <see cref="HttpRawMessageLoggingOptions"/></param>
+        public HttpRawMessageLoggingHandler(ILogger logger, HttpRawMessageLoggingOptions loggingOptions)
         {
-            _loggingOptions = logOptions.Value;
-            _logger = loggerFactory.CreateLogger(_loggingOptions.CategoryName ?? GetType().FullName!);
+            _loggingOptions = loggingOptions;
+            _logger = logger;
         }
 
         /// <summary>
