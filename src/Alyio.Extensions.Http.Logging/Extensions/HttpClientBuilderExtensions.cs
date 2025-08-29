@@ -35,16 +35,14 @@ public static class HttpClientBuilderExtensions
 #if NET8_0_OR_GREATER
         builder.ConfigureAdditionalHttpMessageHandlers((handlers, services) =>
         {
-            var options = services.GetRequiredService<IOptionsSnapshot<HttpRawMessageLoggingOptions>>().Get(builder.Name);
-            var loggerFactory = services.GetRequiredService<ILoggerFactory>();
-            var clientName = string.IsNullOrEmpty(builder.Name) ? "Default" : builder.Name;
-            var categoryName = options.CategoryName ?? $"System.Net.Http.HttpClient.{clientName}.{nameof(HttpRawMessageLoggingHandler)}";
-            var logger = loggerFactory.CreateLogger(categoryName);
-            var handler = new HttpRawMessageLoggingHandler(logger, options);
+            HttpRawMessageLoggingHandler handler = BuildRawMessageLoggingHandler(services, builder.Name);
             handlers.Add(handler);
         });
 #else
-        builder.Services.AddTransient<IHttpMessageHandlerBuilderFilter, HttpRawMessageLoggingFilter>();
+        builder.Services.Configure<HttpClientFactoryOptions>(builder.Name, options =>
+        {
+            options.HttpMessageHandlerBuilderActions.Add(AddHttpRawMessageLoggingHandler);
+        });
 #endif
 
         return builder;
@@ -60,14 +58,6 @@ public static class HttpClientBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        // for (int i = builder.Services.Count - 1; i >= 0; i--)
-        // {
-        //     ServiceDescriptor descriptor = builder.Services[i];
-        //     if (descriptor.ImplementationType == typeof(HttpRawMessageLoggingFilter))
-        //     {
-        //         builder.Services.RemoveAt(i);
-        //     }
-        // }
 #if NET8_0_OR_GREATER
         _ = builder.ConfigureAdditionalHttpMessageHandlers(static (handlers, _) =>
         {
@@ -85,7 +75,7 @@ public static class HttpClientBuilderExtensions
             for (int i = options.HttpMessageHandlerBuilderActions.Count - 1; i >= 0; i--)
             {
                 Action<HttpMessageHandlerBuilder> action = options.HttpMessageHandlerBuilderActions[i];
-                if (action.Target?.GetType()?.GetGenericArguments()?.FirstOrDefault() == typeof(HttpRawMessageLoggingHandler))
+                if (action.Method.Name == nameof(AddHttpRawMessageLoggingHandler))
                 {
                     options.HttpMessageHandlerBuilderActions.RemoveAt(i);
                 }
@@ -96,23 +86,20 @@ public static class HttpClientBuilderExtensions
         return builder;
     }
 
-    private sealed class HttpRawMessageLoggingFilter : IHttpMessageHandlerBuilderFilter
+    private static HttpRawMessageLoggingHandler BuildRawMessageLoggingHandler(IServiceProvider services, string name)
     {
-        public Action<HttpMessageHandlerBuilder> Configure(Action<HttpMessageHandlerBuilder> next)
-        {
-            return builder =>
-            {
-                HttpRawMessageLoggingOptions options = builder.Services.GetRequiredService<IOptionsSnapshot<HttpRawMessageLoggingOptions>>().Get(builder.Name);
-                ILoggerFactory loggerFactory = builder.Services.GetRequiredService<ILoggerFactory>();
-                string clientName = string.IsNullOrEmpty(builder.Name) ? "Default" : builder.Name;
-                string categoryName = options.CategoryName ?? $"System.Net.Http.HttpClient.{clientName}.{nameof(HttpRawMessageLoggingHandler)}";
-                ILogger logger = loggerFactory.CreateLogger(categoryName);
+        HttpRawMessageLoggingOptions options = services.GetRequiredService<IOptionsSnapshot<HttpRawMessageLoggingOptions>>().Get(name);
+        ILoggerFactory loggerFactory = services.GetRequiredService<ILoggerFactory>();
+        string clientName = string.IsNullOrEmpty(name) ? "Default" : name;
+        string categoryName = options.CategoryName ?? $"System.Net.Http.HttpClient.{clientName}.{nameof(HttpRawMessageLoggingHandler)}";
+        ILogger logger = loggerFactory.CreateLogger(categoryName);
+        var handler = new HttpRawMessageLoggingHandler(logger, options);
+        return handler;
+    }
 
-                var handler = new HttpRawMessageLoggingHandler(logger, options);
-                builder.AdditionalHandlers.Add(handler);
-
-                next(builder);
-            };
-        }
+    private static void AddHttpRawMessageLoggingHandler(HttpMessageHandlerBuilder b)
+    {
+        HttpRawMessageLoggingHandler handler = BuildRawMessageLoggingHandler(b.Services, b.Name!);
+        b.AdditionalHandlers.Add(handler);
     }
 }
