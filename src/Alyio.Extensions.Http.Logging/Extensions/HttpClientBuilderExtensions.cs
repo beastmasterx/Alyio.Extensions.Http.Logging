@@ -1,7 +1,9 @@
-// MIT License
+﻿// MIT License
 
 using Alyio.Extensions.Http.Logging;
 using Microsoft.Extensions.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 #pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Microsoft.Extensions.DependencyInjection;
@@ -25,17 +27,23 @@ public static class HttpClientBuilderExtensions
 
         builder.RemoveHttpRawMessageLogging();
 
-        builder.Services.AddTransient<HttpRawMessageLoggingHandler>();
-        builder.Services.AddOptions<HttpRawMessageLoggingOptions>().Configure(options =>
+        builder.Services.AddOptions<HttpRawMessageLoggingOptions>(builder.Name).Configure(options =>
         {
             configureOptions?.Invoke(options);
-            if (options.CategoryName is null)
-            {
-                options.CategoryName = $"System.Net.Http.HttpClient.{builder.Name}.{nameof(HttpRawMessageLoggingHandler)}";
-            }
         });
 
-        builder.AddHttpMessageHandler<HttpRawMessageLoggingHandler>();
+#if NET8_0_OR_GREATER
+        builder.ConfigureAdditionalHttpMessageHandlers((handlers, services) =>
+        {
+            HttpRawMessageLoggingHandler handler = BuildRawMessageLoggingHandler(services, builder.Name);
+            handlers.Add(handler);
+        });
+#else
+        builder.Services.Configure<HttpClientFactoryOptions>(builder.Name, options =>
+        {
+            options.HttpMessageHandlerBuilderActions.Add(AddHttpRawMessageLoggingHandler);
+        });
+#endif
 
         return builder;
     }
@@ -67,7 +75,7 @@ public static class HttpClientBuilderExtensions
             for (int i = options.HttpMessageHandlerBuilderActions.Count - 1; i >= 0; i--)
             {
                 Action<HttpMessageHandlerBuilder> action = options.HttpMessageHandlerBuilderActions[i];
-                if (action.Target?.GetType()?.GetGenericArguments()?.FirstOrDefault() == typeof(HttpRawMessageLoggingHandler))
+                if (action.Method.Name == nameof(AddHttpRawMessageLoggingHandler))
                 {
                     options.HttpMessageHandlerBuilderActions.RemoveAt(i);
                 }
@@ -76,5 +84,22 @@ public static class HttpClientBuilderExtensions
 #endif
 
         return builder;
+    }
+
+    private static HttpRawMessageLoggingHandler BuildRawMessageLoggingHandler(IServiceProvider services, string name)
+    {
+        HttpRawMessageLoggingOptions options = services.GetRequiredService<IOptionsSnapshot<HttpRawMessageLoggingOptions>>().Get(name);
+        ILoggerFactory loggerFactory = services.GetRequiredService<ILoggerFactory>();
+        string clientName = string.IsNullOrEmpty(name) ? "Default" : name;
+        string categoryName = options.CategoryName ?? $"System.Net.Http.HttpClient.{clientName}.{nameof(HttpRawMessageLoggingHandler)}";
+        ILogger logger = loggerFactory.CreateLogger(categoryName);
+        var handler = new HttpRawMessageLoggingHandler(logger, options);
+        return handler;
+    }
+
+    private static void AddHttpRawMessageLoggingHandler(HttpMessageHandlerBuilder b)
+    {
+        HttpRawMessageLoggingHandler handler = BuildRawMessageLoggingHandler(b.Services, b.Name!);
+        b.AdditionalHandlers.Add(handler);
     }
 }
