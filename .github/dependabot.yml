@@ -1,0 +1,16 @@
+# This is a basic Dependabot configuration file.
+# See https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # Enable version updates for NuGet
+  - package-ecosystem: "nuget"
+    # Look for `Directory.Packages.props` and other dependency files in the root directory
+    directory: "/"
+    # Check for updates every day
+    schedule:
+      interval: "daily"
+    # Add labels to the pull requests
+    labels:
+      - "dependencies"
+      - "nuget"
