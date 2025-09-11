@@ -294,5 +294,25 @@ namespace Alyio.Extensions.Http.Logging.Tests
             // Assert
             Assert.Contains("HelloWorld", raw);
         }
+
+        [Theory]
+        [InlineData("image/png")]
+        [InlineData("image/jpeg")]
+        [InlineData("audio/mpeg")]
+        [InlineData("video/mp4")]
+        [InlineData("application/octet-stream")]
+        public async Task ReadRawMessageAsync_WithNonTextContent_ShouldIncludeBody(string contentType)
+        {
+            var message = new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new ByteArrayContent(new byte[] { 1, 2, 3 })
+            };
+            message.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
+
+            string raw = await message.ReadRawMessageAsync();
+            Assert.Contains($"Content-Type: {contentType}", raw);
+            Assert.Contains("\u0001\u0002\u0003", raw);
+        }
     }
 }

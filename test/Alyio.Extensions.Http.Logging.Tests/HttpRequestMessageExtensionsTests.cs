@@ -192,5 +192,48 @@ namespace Alyio.Extensions.Http.Logging.Tests
             Assert.Contains("john@example.com", raw);
             Assert.Contains("Hello, this is a file content", raw);
         }
+
+        [Theory]
+        [InlineData("image/png")]
+        [InlineData("image/jpeg")]
+        [InlineData("audio/mpeg")]
+        [InlineData("video/mp4")]
+        [InlineData("application/octet-stream")]
+        public async Task ReadRawMessageAsync_WithNonTextContent_ShouldIncludeBody(string contentType)
+        {
+            HttpRequestMessage message = new(HttpMethod.Post, "/foo/bar")
+            {
+                Content = new ByteArrayContent(new byte[] { 1, 2, 3 })
+            };
+            message.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+
+            string raw = await message.ReadRawMessageAsync();
+            Assert.Contains($"Content-Type: {contentType}", raw);
+            Assert.Contains("\u0001\u0002\u0003", raw);
+        }
+
+        [Fact]
+        public async Task ReadRawMessageAsync_WithMultipartFormDataWithNonTextContent_ShouldIncludeBody()
+        {
+            var content = new MultipartFormDataContent
+            {
+                { new StringContent("John X"), "full name" },
+                { new ByteArrayContent(new byte[] { 1, 2, 3 }), "file", "test.bin" }
+            };
+
+            HttpRequestMessage message = new(HttpMethod.Post, "/foo/bar")
+            {
+                Content = content
+            };
+
+            string raw = await message.ReadRawMessageAsync();
+
+            // Verify multipart form data structure
+            Assert.Contains("Content-Type: multipart/form-data", raw);
+            Assert.Contains("name=\"full name\"", raw);
+            Assert.Contains("name=file; filename=test.bin", raw);
+            Assert.Contains("John X", raw);
+            Assert.Contains("\u0001\u0002\u0003", raw);
+        }
     }
 }
