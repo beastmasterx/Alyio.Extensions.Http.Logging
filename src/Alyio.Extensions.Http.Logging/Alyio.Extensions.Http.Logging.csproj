@@ -34,4 +34,9 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="Microsoft.Net.Http.Headers" />
   </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Alyio.Extensions.Http.Logging.Tests" />
+  </ItemGroup>
+
 </Project>
