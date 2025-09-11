@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net6.0;net8.0;net9.0</TargetFrameworks>
-    <VersionPrefix>4.5.0</VersionPrefix>
+    <VersionPrefix>4.7.0</VersionPrefix>
     <Copyright>Copyright (c) 2025 Jon X</Copyright>
     <Description>A .NET library for comprehensive and configurable logging of raw HTTP request and response messages.</Description>
     <Authors>Jon X</Authors>
