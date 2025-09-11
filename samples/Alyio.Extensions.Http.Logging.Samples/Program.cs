@@ -49,18 +49,25 @@ internal interface IHttpBinService
     Task<HttpResponseMessage> PostAudioMpegAsync();
 }
 
-sealed class HttpBinService(HttpClient client) : IHttpBinService
+sealed class HttpBinService : IHttpBinService
 {
+    private readonly HttpClient _client;
+
+    public HttpBinService(HttpClient client)
+    {
+        _client = client;
+    }
+
     public Task<HttpResponseMessage> GetUserAgentAsync()
     {
         var request = new HttpRequestMessage(HttpMethod.Get, "/user-agent");
         request.Headers.UserAgent.ParseAdd("Alyio.Extensions.Http.Logging.Samples/1.0");
-        return client.SendAsync(request);
+        return _client.SendAsync(request);
     }
 
     public Task<HttpResponseMessage> GetImagePNGAsync()
     {
-        return client.GetAsync("/image/png");
+        return _client.GetAsync("/image/png");
     }
 
     public Task<HttpResponseMessage> PostImagePNGAsync()
@@ -85,7 +92,7 @@ sealed class HttpBinService(HttpClient client) : IHttpBinService
             Content = content
         };
 
-        return client.SendAsync(request);
+        return _client.SendAsync(request);
     }
 
     public Task<HttpResponseMessage> PostAudioMpegAsync()
@@ -104,6 +111,6 @@ sealed class HttpBinService(HttpClient client) : IHttpBinService
             Content = content
         };
 
-        return client.SendAsync(request);
+        return _client.SendAsync(request);
     }
 }
