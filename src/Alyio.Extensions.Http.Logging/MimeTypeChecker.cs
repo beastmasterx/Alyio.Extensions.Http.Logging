@@ -97,7 +97,7 @@ internal static class MimeTypeChecker
     /// </summary>
     /// <param name="mimeType">The MIME type string to check.</param>
     /// <returns>True if the MIME type is text-based, otherwise false.</returns>
-    public static bool IsTextBased(string mimeType)
+    public static bool IsTextBased(string? mimeType)
     {
         if (string.IsNullOrWhiteSpace(mimeType))
         {

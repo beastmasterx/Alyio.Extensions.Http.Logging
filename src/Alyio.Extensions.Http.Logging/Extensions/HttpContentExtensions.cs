@@ -1,5 +1,7 @@
 // MIT License
 
+using Alyio.Extensions.Http.Logging;
+
 namespace Alyio.Extensions
 {
     /// <summary>
@@ -24,6 +26,11 @@ namespace Alyio.Extensions
         public static async Task<(string message, HttpContent content)> ReadRawMessageAsync(this HttpContent content, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(content);
+
+            if (MimeTypeChecker.IsTextBased(content.Headers.ContentType?.MediaType) is false)
+            {
+                return ($"[{content.Headers.ContentType?.MediaType ?? "unknown"}]", content);
+            }
 
             string text = string.Empty;
             Stream contentStream = await content.ReadAsStreamAsync(cancellationToken);

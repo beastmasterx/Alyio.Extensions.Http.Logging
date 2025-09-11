@@ -1,4 +1,4 @@
-﻿// MIT License
+// MIT License
 
 using System.Net.Http.Headers;
 using System.Text;
@@ -124,7 +124,7 @@ namespace Alyio.Extensions.Http.Logging.Tests
         }
 
         [Theory]
-        [InlineData("application/json", "{\"key\":\"value\"}")]
+        [InlineData("application/json", "{{\"key\":\"value\"}}")]
         [InlineData("text/plain", "Hello World")]
         [InlineData("application/xml", "<root><item>value</item></root>")]
         public async Task ReadRawMessageAsync_WithContentType_ShouldIncludeContentTypeAndBody(string contentType, string content)
@@ -209,22 +209,25 @@ namespace Alyio.Extensions.Http.Logging.Tests
 
             string raw = await message.ReadRawMessageAsync();
             Assert.Contains($"Content-Type: {contentType}", raw);
-            Assert.Contains("\u0001\u0002\u0003", raw);
+            Assert.Contains($"[{contentType}]", raw);
         }
 
         [Fact]
         public async Task ReadRawMessageAsync_WithMultipartFormDataWithNonTextContent_ShouldIncludeBody()
         {
+            var fileContent = new ByteArrayContent(new byte[] { 1, 2, 3 });
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
             var content = new MultipartFormDataContent
             {
                 { new StringContent("John X"), "full name" },
-                { new ByteArrayContent(new byte[] { 1, 2, 3 }), "file", "test.bin" }
+                { fileContent, "file", "test.bin" }
             };
 
             HttpRequestMessage message = new(HttpMethod.Post, "/foo/bar")
             {
                 Content = content
             };
+            message.Content.Headers.ContentType = new MediaTypeHeaderValue("multipart/form-data");
 
             string raw = await message.ReadRawMessageAsync();
 
@@ -233,7 +236,7 @@ namespace Alyio.Extensions.Http.Logging.Tests
             Assert.Contains("name=\"full name\"", raw);
             Assert.Contains("name=file; filename=test.bin", raw);
             Assert.Contains("John X", raw);
-            Assert.Contains("\u0001\u0002\u0003", raw);
+            Assert.Contains("[application/octet-stream]", raw);
         }
     }
 }

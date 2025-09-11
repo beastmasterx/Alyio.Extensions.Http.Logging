@@ -1,4 +1,4 @@
-﻿// MIT License
+// MIT License
 
 using System.Net;
 using System.Text;
@@ -262,7 +262,7 @@ namespace Alyio.Extensions.Http.Logging.Tests
         }
 
         [Fact]
-        public async Task ReadRawMessageAsync_WhenStreamContent_ShouldIncludeStreamContent()
+        public async Task ReadRawMessageAsync_WhenStreamContentWithoutMimeType_ShouldShowUnknownMimeType()
         {
             // Arrange
             var stream = new MemoryStream(Encoding.UTF8.GetBytes("Stream Content"));
@@ -275,7 +275,7 @@ namespace Alyio.Extensions.Http.Logging.Tests
             string raw = await message.ReadRawMessageAsync();
 
             // Assert
-            Assert.Contains("Stream Content", raw);
+            Assert.Contains("[unknown]", raw);
         }
 
         [Fact]
@@ -312,7 +312,7 @@ namespace Alyio.Extensions.Http.Logging.Tests
 
             string raw = await message.ReadRawMessageAsync();
             Assert.Contains($"Content-Type: {contentType}", raw);
-            Assert.Contains("\u0001\u0002\u0003", raw);
+            Assert.Contains($"[{contentType}]", raw);
         }
     }
 }
