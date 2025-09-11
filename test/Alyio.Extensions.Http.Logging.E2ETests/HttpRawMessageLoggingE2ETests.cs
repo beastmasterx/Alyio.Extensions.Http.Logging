@@ -10,12 +10,12 @@ namespace Alyio.Extensions.Http.Logging.E2ETests;
 
 public class HttpRawMessageLoggingE2ETests
 {
-    private const string E2E_TEST_URL_GET = "https://httpbin.org/get";
-    private const string E2E_TEST_URL_POST = "https://httpbin.org/post";
-    private const string E2E_TEST_URL_HEADERS = "https://httpbin.org/headers";
-    private const string E2E_TEST_URL_STATUS_404 = "https://httpbin.org/status/404";
-    private const string E2E_TEST_URL_IMAGE_PNG = "https://httpbin.org/image/png";
-    private const string E2E_TEST_URL_ANYTHING = "https://httpbin.org/anything";
+    private const string E2E_TEST_URL_GET = "/get";
+    private const string E2E_TEST_URL_POST = "/post";
+    private const string E2E_TEST_URL_HEADERS = "/headers";
+    private const string E2E_TEST_URL_STATUS_404 = "/status/404";
+    private const string E2E_TEST_URL_IMAGE_PNG = "/image/png";
+    private const string E2E_TEST_URL_ANYTHING = "/anything";
 
 
     public class DefaultOptionsTests
@@ -223,8 +223,14 @@ public class HttpRawMessageLoggingE2ETests
             const string clientNameA = "ClientA";
             const string clientNameB = "ClientB";
 
-            services.AddHttpClient(clientNameA).AddHttpRawMessageLogging();
-            services.AddHttpClient(clientNameB).AddHttpRawMessageLogging();
+            services.AddHttpClient(clientNameA, client =>
+            {
+                client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("HTTPBIN_URL") ?? "https://httpbin.org");
+            }).AddHttpRawMessageLogging();
+            services.AddHttpClient(clientNameB, client =>
+            {
+                client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("HTTPBIN_URL") ?? "https://httpbin.org");
+            }).AddHttpRawMessageLogging();
 
             var serviceProvider = services.BuildServiceProvider();
             var loggerCollector = serviceProvider.GetFakeLogCollector();
@@ -313,7 +319,10 @@ public class HttpRawMessageLoggingE2ETests
         var services = new ServiceCollection();
         services.AddLogging(b => b.AddFakeLogging());
 
-        var httpClientBuilder = services.AddHttpClient("Default");
+        var httpClientBuilder = services.AddHttpClient("Default", client =>
+        {
+            client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("HTTPBIN_URL") ?? "https://httpbin.org");
+        });
 
         if (configureOptions != null)
         {

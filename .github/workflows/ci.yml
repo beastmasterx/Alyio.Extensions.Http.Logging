@@ -16,6 +16,11 @@ on:
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
+    services:
+      httpbin:
+        image: kennethreitz/httpbin
+        ports:
+          - 80:80
     strategy:
       matrix:
         include:
@@ -47,6 +52,8 @@ jobs:
         run: dotnet build --no-restore -c Release -p:TargetFrameworks="${{ matrix.framework }}"
 
       - name: Run Tests
+        env:
+          HTTPBIN_URL: http://localhost
         run: dotnet test --no-build --no-restore -c Release -p:TargetFrameworks="${{ matrix.framework }}" -p:CollectCoverage=true -p:CoverletOutputFormat=opencover
 
   pack_and_publish:
