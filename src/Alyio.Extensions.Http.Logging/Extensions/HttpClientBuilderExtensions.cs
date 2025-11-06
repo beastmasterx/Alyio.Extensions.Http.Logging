@@ -97,9 +97,11 @@ public static class HttpClientBuilderExtensions
         return handler;
     }
 
+#if !NET8_0_OR_GREATER
     private static void AddHttpRawMessageLoggingHandler(HttpMessageHandlerBuilder b)
     {
         HttpRawMessageLoggingHandler handler = BuildRawMessageLoggingHandler(b.Services, b.Name!);
         b.AdditionalHandlers.Add(handler);
     }
+#endif
 }
