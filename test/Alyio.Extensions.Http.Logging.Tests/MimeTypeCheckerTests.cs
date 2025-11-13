@@ -1,8 +1,5 @@
 // MIT License
 
-using Alyio.Extensions.Http.Logging;
-using Xunit;
-
 namespace Alyio.Extensions.Http.Logging.Tests;
 
 public class MimeTypeCheckerTests
@@ -38,7 +35,7 @@ public class MimeTypeCheckerTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
-    public void IsTextBased_ShouldReturnFalse_ForNullOrWhiteSpace(string mimeType)
+    public void IsTextBased_ShouldReturnFalse_ForNullOrWhiteSpace(string? mimeType)
     {
         Assert.False(MimeTypeChecker.IsTextBased(mimeType));
     }
