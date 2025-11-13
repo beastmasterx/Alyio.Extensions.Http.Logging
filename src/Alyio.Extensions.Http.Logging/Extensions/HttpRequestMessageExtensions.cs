@@ -77,6 +77,7 @@ public static class HttpRequestMessageExtensions
             if (request.Content is MultipartFormDataContent originalFormData)
             {
                 var duplicatedFormData = new MultipartFormDataContent();
+                duplicatedFormData.Headers.Clear(); // Remove auto-generated headers to preserve originals
                 foreach (KeyValuePair<string, IEnumerable<string>> header in originalFormData.Headers)
                 {
                     duplicatedFormData.Headers.TryAddWithoutValidation(header.Key, header.Value);

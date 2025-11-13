@@ -8,27 +8,28 @@ using Microsoft.Extensions.Logging.Testing;
 
 namespace Alyio.Extensions.Http.Logging.E2ETests;
 
-public class HttpRawMessageLoggingE2ETests
+public sealed class HttpRawMessageLoggingE2ETests
 {
     private const string E2E_TEST_URL_GET = "/get";
     private const string E2E_TEST_URL_POST = "/post";
     private const string E2E_TEST_URL_HEADERS = "/headers";
     private const string E2E_TEST_URL_STATUS_404 = "/status/404";
     private const string E2E_TEST_URL_IMAGE_PNG = "/image/png";
-    private const string E2E_TEST_URL_ANYTHING = "/anything";
+
+    // a 1x1 PNG image (black pixel)
+    private static readonly byte[] s_imageBytes = new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4, 0x89, 0x00, 0x00, 0x00, 0x0A, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9C, 0x63, 0x00, 0x01, 0x00, 0x00, 0x05, 0x00, 0x01, 0x0D, 0x0A, 0x2D, 0xB4, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82 };
 
 
-    public class DefaultOptionsTests
+    public sealed class DefaultOptionsTests
     {
-        [Theory]
-        [InlineData(E2E_TEST_URL_GET)]
-        public async Task ForGetRequest_ShouldLogRequestAndResponseWithoutBody(string url)
+        [Fact]
+        public async Task ForGetRequest_ShouldLogRequestAndResponseWithoutBody()
         {
             // Arrange
             var (client, loggerCollector) = CreateClientAndLogger();
 
             // Act
-            await client.GetAsync(url);
+            await client.GetAsync(E2E_TEST_URL_GET);
 
             // Assert
             var logs = loggerCollector.GetSnapshot()
@@ -45,16 +46,15 @@ public class HttpRawMessageLoggingE2ETests
             );
         }
 
-        [Theory]
-        [InlineData(E2E_TEST_URL_POST)]
-        public async Task ForPostRequest_ShouldLogRequestAndResponseWithoutBody(string url)
+        [Fact]
+        public async Task ForPostRequest_ShouldLogRequestAndResponseWithoutBody()
         {
             // Arrange
             var (client, loggerCollector) = CreateClientAndLogger();
             var content = new StringContent("{\"key\":\"value\"}", System.Text.Encoding.UTF8, "application/json");
 
             // Act
-            await client.PostAsync(url, content);
+            await client.PostAsync(E2E_TEST_URL_POST, content);
 
             // Assert
             var logs = loggerCollector.GetSnapshot()
@@ -71,16 +71,15 @@ public class HttpRawMessageLoggingE2ETests
             );
         }
 
-        [Theory]
-        [InlineData(E2E_TEST_URL_HEADERS)]
-        public async Task ForRequestWithAuthorizationHeader_ShouldRedactHeaderValue(string url)
+        [Fact]
+        public async Task ForRequestWithAuthorizationHeader_ShouldRedactHeaderValue()
         {
             // Arrange
             var (client, loggerCollector) = CreateClientAndLogger();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "my-secret-token");
 
             // Act
-            await client.GetAsync(url);
+            await client.GetAsync(E2E_TEST_URL_HEADERS);
 
             // Assert
             var logs = loggerCollector.GetSnapshot()
@@ -92,11 +91,10 @@ public class HttpRawMessageLoggingE2ETests
         }
     }
 
-    public class CustomOptionsTests
+    public sealed class CustomOptionsTests
     {
-        [Theory]
-        [InlineData(E2E_TEST_URL_POST)]
-        public async Task WhenRequestContentLoggingEnabled_ShouldLogRequestBody(string url)
+        [Fact]
+        public async Task WhenRequestContentLoggingEnabled_ShouldLogRequestBody()
         {
             // Arrange
             var (client, loggerCollector) = CreateClientAndLogger(options =>
@@ -106,9 +104,10 @@ public class HttpRawMessageLoggingE2ETests
             var content = new StringContent("{\"key\":\"value\"}", System.Text.Encoding.UTF8, "application/json");
 
             // Act
-            await client.PostAsync(url, content);
+            var response = await client.PostAsync(E2E_TEST_URL_POST, content);
 
             // Assert
+            Assert.True(response.IsSuccessStatusCode, response.ReasonPhrase);
             var logs = loggerCollector.GetSnapshot()
                 .Where(l => l.Category?.EndsWith(nameof(HttpRawMessageLoggingHandler), StringComparison.Ordinal) is true)
                 .ToList();
@@ -123,9 +122,8 @@ public class HttpRawMessageLoggingE2ETests
             );
         }
 
-        [Theory]
-        [InlineData(E2E_TEST_URL_GET)]
-        public async Task WhenResponseContentLoggingEnabled_ShouldLogResponseBody(string url)
+        [Fact]
+        public async Task WhenResponseContentLoggingEnabled_ShouldLogResponseBody()
         {
             // Arrange
             var (client, loggerCollector) = CreateClientAndLogger(options =>
@@ -134,9 +132,10 @@ public class HttpRawMessageLoggingE2ETests
             });
 
             // Act
-            await client.GetAsync(url);
+            var response = await client.GetAsync(E2E_TEST_URL_GET);
 
             // Assert
+            Assert.True(response.IsSuccessStatusCode, response.ReasonPhrase);
             var logs = loggerCollector.GetSnapshot()
                 .Where(l => l.Category?.EndsWith(nameof(HttpRawMessageLoggingHandler), StringComparison.Ordinal) is true)
                 .ToList();
@@ -151,21 +150,23 @@ public class HttpRawMessageLoggingE2ETests
             );
         }
 
-        [Theory]
-        [InlineData(E2E_TEST_URL_HEADERS)]
-        public async Task WhenHeaderIsIgnored_ShouldNotLogHeader(string url)
+        [Fact]
+        public async Task WhenHeaderIsIgnored_ShouldNotLogHeader()
         {
             // Arrange
             var (client, loggerCollector) = CreateClientAndLogger(options =>
             {
+#pragma warning disable CA1861 // Avoid constant arrays as arguments
                 options.IgnoreRequestHeaders = new string[] { "X-Test-Header" };
+#pragma warning restore CA1861 // Avoid constant arrays as arguments
             });
             client.DefaultRequestHeaders.Add("X-Test-Header", "test-value");
 
             // Act
-            await client.GetAsync(url);
+            var response = await client.GetAsync(E2E_TEST_URL_HEADERS);
 
             // Assert
+            Assert.True(response.IsSuccessStatusCode, response.ReasonPhrase);
             var logs = loggerCollector.GetSnapshot()
                 .Where(l => l.Category?.EndsWith(nameof(HttpRawMessageLoggingHandler), StringComparison.Ordinal) is true)
                 .ToList();
@@ -173,15 +174,14 @@ public class HttpRawMessageLoggingE2ETests
             Assert.DoesNotContain("X-Test-Header", requestMessageLog.Message);
         }
 
-        [Theory]
-        [InlineData(E2E_TEST_URL_STATUS_404)]
-        public async Task ForRequestToNonExistentEndpoint_ShouldLog404Response(string url)
+        [Fact]
+        public async Task ForRequestToNonExistentEndpoint_ShouldLog404Response()
         {
             // Arrange
             var (client, loggerCollector) = CreateClientAndLogger();
 
             // Act
-            var response = await client.GetAsync(url);
+            var response = await client.GetAsync(E2E_TEST_URL_STATUS_404);
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -192,20 +192,21 @@ public class HttpRawMessageLoggingE2ETests
             Assert.Contains("HTTP/1.1 404 NOT FOUND", responseMessageLog.Message);
         }
 
-        [Theory]
-        [InlineData("MyCustomCategory")]
-        public async Task WhenCustomCategoryIsUsed_ShouldLogUnderThatCategory(string customCategoryName)
+        [Fact]
+        public async Task WhenCustomCategoryIsUsed_ShouldLogUnderThatCategory()
         {
             // Arrange
+            const string customCategoryName = "MyCustomCategory";
             var (client, loggerCollector) = CreateClientAndLogger(options =>
             {
                 options.CategoryName = customCategoryName;
             });
 
             // Act
-            await client.GetAsync(E2E_TEST_URL_GET);
+            var response = await client.GetAsync(E2E_TEST_URL_GET);
 
             // Assert
+            Assert.True(response.IsSuccessStatusCode, response.ReasonPhrase);
             var logs = loggerCollector.GetSnapshot()
                 .Where(l => l.Category?.Equals(customCategoryName, StringComparison.Ordinal) is true)
                 .ToList();
@@ -238,10 +239,12 @@ public class HttpRawMessageLoggingE2ETests
             var clientB = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(clientNameB);
 
             // Act
-            await clientA.GetAsync(E2E_TEST_URL_GET);
-            await clientB.GetAsync(E2E_TEST_URL_GET);
+            var responseA = await clientA.GetAsync(E2E_TEST_URL_GET);
+            var responseB = await clientB.GetAsync(E2E_TEST_URL_GET);
 
             // Assert
+            Assert.True(responseA.IsSuccessStatusCode, responseA.ReasonPhrase);
+            Assert.True(responseB.IsSuccessStatusCode, responseB.ReasonPhrase);
             var expectedCategoryA = $"System.Net.Http.HttpClient.{clientNameA}.{nameof(HttpRawMessageLoggingHandler)}";
             var expectedCategoryB = $"System.Net.Http.HttpClient.{clientNameB}.{nameof(HttpRawMessageLoggingHandler)}";
 
@@ -264,11 +267,10 @@ public class HttpRawMessageLoggingE2ETests
         }
     }
 
-    public class ImageBodyTests
+    public sealed class ImageBodyTests
     {
-        [Theory]
-        [InlineData(E2E_TEST_URL_ANYTHING)]
-        public async Task ForPostRequestWithImageAndEchoedJson_ShouldLogRequestAsImage(string url)
+        [Fact]
+        public async Task ForPostRequestWithImage_ShouldLogRequestAsImage()
         {
             // Arrange
             var (client, loggerCollector) = CreateClientAndLogger(options =>
@@ -276,14 +278,14 @@ public class HttpRawMessageLoggingE2ETests
                 options.IgnoreRequestContent = false;
                 options.IgnoreResponseContent = false;
             });
-            var imageBytes = new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4, 0x89, 0x00, 0x00, 0x00, 0x0A, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9C, 0x63, 0x00, 0x01, 0x00, 0x00, 0x05, 0x00, 0x01, 0x0D, 0x0A, 0x2D, 0xB4, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82 };
-            var content = new ByteArrayContent(imageBytes);
+            var content = new ByteArrayContent(s_imageBytes);
             content.Headers.ContentType = new MediaTypeHeaderValue("image/png");
 
             // Act
-            await client.PostAsync(url, content);
+            var response = await client.PostAsync(E2E_TEST_URL_POST, content);
 
             // Assert
+            Assert.True(response.IsSuccessStatusCode, response.ReasonPhrase);
             var logs = loggerCollector.GetSnapshot()
                 .Where(l => l.Category?.EndsWith(nameof(HttpRawMessageLoggingHandler), StringComparison.Ordinal) is true)
                 .ToList();
@@ -292,9 +294,8 @@ public class HttpRawMessageLoggingE2ETests
             Assert.Contains("[image/png]", requestMessageLog.Message);
         }
 
-        [Theory]
-        [InlineData(E2E_TEST_URL_IMAGE_PNG)]
-        public async Task ForGetRequestWithImageResponse_ShouldLogResponseAsImage(string url)
+        [Fact]
+        public async Task ForGetRequestWithImageResponse_ShouldLogResponseAsImage()
         {
             // Arrange
             var (client, loggerCollector) = CreateClientAndLogger(options =>
@@ -303,14 +304,82 @@ public class HttpRawMessageLoggingE2ETests
             });
 
             // Act
-            await client.GetAsync(url);
+            var response = await client.GetAsync(E2E_TEST_URL_IMAGE_PNG);
 
             // Assert
+            Assert.True(response.IsSuccessStatusCode, response.ReasonPhrase);
             var logs = loggerCollector.GetSnapshot()
                 .Where(l => l.Category?.EndsWith(nameof(HttpRawMessageLoggingHandler), StringComparison.Ordinal) is true)
                 .ToList();
             var responseMessageLog = logs.First(l => l.Message.StartsWith("Response-Message:", StringComparison.Ordinal));
             Assert.Contains("[image/png]", responseMessageLog.Message);
+        }
+    }
+
+    public sealed class FormBodyTests
+    {
+        [Fact]
+        public async Task ForPostRequestWithFormUrlEncodedContent_ShouldLogRequestAsFormUrlEncoded()
+        {
+            // Arrange
+            var (client, loggerCollector) = CreateClientAndLogger(options =>
+            {
+                options.IgnoreRequestContent = false;
+                options.IgnoreResponseContent = false;
+            });
+
+            var content = new FormUrlEncodedContent(new Dictionary<string, string>{
+                { "field1", "value1" },
+                { "field2", "value2" },
+            });
+
+            // Act
+            var response = await client.PostAsync(E2E_TEST_URL_POST, content);
+
+            // Assert
+            Assert.True(response.IsSuccessStatusCode, response.ReasonPhrase);
+
+            var logs = loggerCollector.GetSnapshot()
+                .Where(l => l.Category?.EndsWith(nameof(HttpRawMessageLoggingHandler), StringComparison.Ordinal) is true)
+                .ToList();
+            var requestMessageLog = logs.First(l => l.Message.StartsWith("Request-Message:", StringComparison.Ordinal));
+            Assert.Contains("field1=value1", requestMessageLog.Message);
+            Assert.Contains("field2=value2", requestMessageLog.Message);
+        }
+
+        [Fact]
+        public async Task ForPostRequestWithMultipartFormDataContent_ShouldLogRequestAsMultipartFormData()
+        {
+            // Arrange
+            var (client, loggerCollector) = CreateClientAndLogger(options =>
+            {
+                options.IgnoreRequestContent = false;
+                options.IgnoreResponseContent = false;
+            });
+
+            var content = new MultipartFormDataContent
+            {
+                { new StringContent("value1"), "field1" },
+                { new StringContent("value2"), "field2" },
+            };
+            var imageContent = new ByteArrayContent(s_imageBytes);
+            imageContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+            content.Add(imageContent, "image", "image.png");
+
+            // Act
+            var response = await client.PostAsync(E2E_TEST_URL_POST, content);
+
+            // Assert
+            Assert.True(response.IsSuccessStatusCode, response.ReasonPhrase);
+
+            var logs = loggerCollector.GetSnapshot()
+                .Where(l => l.Category?.EndsWith(nameof(HttpRawMessageLoggingHandler), StringComparison.Ordinal) is true)
+                .ToList();
+            var requestMessageLog = logs.First(l => l.Message.StartsWith("Request-Message:", StringComparison.Ordinal));
+            Assert.Contains("name=field1", requestMessageLog.Message);
+            Assert.Contains("name=field2", requestMessageLog.Message);
+            Assert.Contains("name=image", requestMessageLog.Message);
+            Assert.Contains("[image/png]", requestMessageLog.Message);
         }
     }
 
