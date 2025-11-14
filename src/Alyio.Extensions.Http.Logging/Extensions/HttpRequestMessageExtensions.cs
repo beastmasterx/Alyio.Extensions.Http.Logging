@@ -76,14 +76,10 @@ public static class HttpRequestMessageExtensions
 
             if (request.Content is MultipartFormDataContent originalFormData)
             {
-                var duplicatedFormData = new MultipartFormDataContent();
-                duplicatedFormData.Headers.Clear(); // Remove auto-generated headers to preserve originals
-                foreach (KeyValuePair<string, IEnumerable<string>> header in originalFormData.Headers)
-                {
-                    duplicatedFormData.Headers.TryAddWithoutValidation(header.Key, header.Value);
-                }
+                const string boundaryName = "boundary";
+                string? boundary = originalFormData.Headers.ContentType?.Parameters?.FirstOrDefault(p => p.Name == boundaryName)?.Value?.Trim('"');
+                var duplicatedFormData = boundary == null ? new MultipartFormDataContent() : new MultipartFormDataContent(boundary);
 
-                string? boundary = originalFormData.Headers.ContentType?.Parameters.FirstOrDefault(p => p.Name == "boundary")?.Value;
                 foreach (HttpContent content in originalFormData)
                 {
                     if (content.Headers.ContentDisposition != null)
